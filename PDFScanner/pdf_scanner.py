@@ -55,6 +55,5 @@ while i < len(tokenized_text) - 1:
     if keyword_count >= len(top_keywords_allowance_claiming): #Check if keywords are filled
         break
 
-
-#print(tokenized_text)
+print(tokenized_text)
 #print(top_fields)
