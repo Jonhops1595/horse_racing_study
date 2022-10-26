@@ -1,0 +1,35 @@
+{
+	"tracks" : [
+		{"name": "Ajax Downs","abrev": "AJX"},
+		{"name": "Belmont At the Big A","abrev": "BAQ"},
+		{"name": "Camarero Race Track", "abrev": "CMR"},
+		{"name": "Century Mile", "abrev": "CTM"},
+		{"name": "Hollywod Casino at Charles Town Races", "abrev": "CT"},
+		{"name": "Delaware Park", "abrev": "DEL"},
+		{"name": "Delta Downs", "abrev": "DED"},
+		{"name": "Evangeline Downs", "abrev": "EVD"},
+		{"name": "Finger Lakes", "abrev": "FL"},
+		{"name": "Fort Erie", "abrev": "FE"},
+		{"name": "Golden Gate Fields", "abrev": "GG"},
+		{"name": "Great Meadow", "abrev": "GRM"},
+		{"name": "Gulfstream Park", "abrev": "GP"},
+		{"name": "Hastings Racecourse", "abrev": "HST"},
+		{"name": "Hawthorne", "abrev": "HAW"},
+		{"name": "Horseshoe Indianapolis", "abrev": "IND"},
+		{"name": "Laurel Park", "abrev": "LRL"},
+		{"name": "Lone Star Park", "abrev": "LS"},
+		{"name": "Los Alamitos", "abrev": "LA"},
+		{"name": "Mahoning Valley Race Course", "abrev": "MVR"},
+		{"name": "Meadowlands", "abrev": "MED"},
+		{"name": "Mountaineer Casino Racetrack & Resort", "abrev": "MNR"},
+		{"name": "Parx Racing", "abrev": "PRX"},
+		{"name": "Penn National", "abrev": "PEN"},
+		{"name": "Presque Isle Downs", "abrev": "PID"},
+		{"name": "Remington Park", "abrev": "RP"},
+		{"name": "Santa Anita Park", "abrev": "SA"},
+		{"name": "Will Rogers Downs", "abrev": "WRD"},
+		{"name": "Woodbine", "abrev": "WO"},
+		{"name": "Zia Park", "abrev": "ZIA"}	
+	]
+}
+
