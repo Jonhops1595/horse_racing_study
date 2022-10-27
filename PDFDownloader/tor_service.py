@@ -24,7 +24,21 @@ class TorService:
                               password = 'TriggerPull',
                               autochange_id=1
                               )
+        self.robot_list = []
 
+
+    def verify_page(self,page):
+        text = page.text
+        if(text.__contains__("ROBOTS")):
+            print("Found Robots, adding to try later list")
+            self.robot_list.append(self.urls[self.index])
+            return False
+        if 'Helvetica' in text:
+            return True
+        else:
+            print("Empty File; Discarding")
+            return False 
+    
     '''
     Returns path of new pdf downloaded 
     temp_path: path to download pdfs into
@@ -33,13 +47,16 @@ class TorService:
         foundPDF = False
         #Loop until valid URL
         while not(foundPDF):
-            print(self.index)
             #time.sleep(5)
             r = self.rt.get(self.urls[self.index])
-            print(r)
-            if(r.status_code != 404 and verify_page(r)): #If pdf is at url
+            print(r, "at", self.urls[self.index])
+            if(r.status_code != 404 and self.verify_page(r)): #If pdf is at url
                 foundPDF = True
-                name =  self.urls[self.index].split('/')[6].split('.')[0]
+                #Making name for file
+                str_list = self.urls[self.index].split('&')
+                track_id = str_list[2].split('=')[1]
+                date = str_list[4].split('=')[1].replace('/','_')
+                name =  track_id +"_"+date
                 filename = '{}/{}.pdf'.format(temp_path,name)
                 with open(filename, 'wb') as f:  
                     f.write(r.content) # writes the bytes to a file with the name of the race   
@@ -50,24 +67,23 @@ class TorService:
         
     def get_pdf_at_url(self,url,temp_path = os.getcwd()):
         r = self.rt.get(url)
-        print(r)
-        if(r.ok): #If pdf is at url
-            name =  self.urls[self.index].split('/')[6].split('.')[0]
+        print(r, "at", self.urls[self.index])
+        if(r.status_code != 404 and self.verify_page(r)): #If pdf is at url
+            #Making name for file
+            str_list = self.urls[self.index].split('&')
+            track_id = str_list[2].split('=')[1]
+            date = str_list[4].split('=')[1].replace('/','_')
+            name =  track_id +"_"+date
             filename = '{}/{}.pdf'.format(temp_path,name)
-            #with open(filename, 'wb') as f:  
-                #f.write(r.content) # writes the bytes to a file with the name of the race   
-                #f.close()
+            with open(filename, 'wb') as f:  
+                f.write(r.content) # writes the bytes to a file with the name of the race   
+                f.close()
             print("Wrote PDF to : ", filename)
             return filename
         else:
             print("PDF not found at url")
         
-def verify_page(page):
-    print(page.text)
-    if(page.text.__contains__("ROBOTS")):
-        print("Found Robots")
-        return True
-    return True
+
     
     
     

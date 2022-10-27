@@ -35,17 +35,10 @@ def generate_urls_last50():
             else:
                 date_month = date.month
             urls.append(queryString.format(raceid = track["abrev"],
-<<<<<<< HEAD
                                       month = date_month,
                                       day = date_day,
                                       year = date.year,
                                       country = track['country']
-=======
-                                      month = date.month,
-                                      day = date.day,
-                                      year = date.year % 1000,
-                                      country = track["country"]
->>>>>>> 507baa190123ef5135564fc302cfa66dde6d87fb
                                       ))
     return urls
 
@@ -81,16 +74,9 @@ def generate_urls(start_date, end_date):
             else:
                 date_month = date.month
             urls.append(queryString.format(raceid = track["abrev"],
-<<<<<<< HEAD
                                       month = date_month,
                                       day = date_day,
                                       year = date.year,
                                       country = track['country']
-=======
-                                      month = date.month,
-                                      day = date.day,
-                                      year = date.year % 1000,
-                                      country = track["country"]
->>>>>>> 507baa190123ef5135564fc302cfa66dde6d87fb
                                       ))
     return urls
