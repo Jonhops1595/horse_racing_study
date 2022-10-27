@@ -20,16 +20,24 @@ def generate_urls_last50():
 
     datelist = pd.date_range(end = today, periods=50).tolist()
 
-    queryString = "https://www.equibase.com/static/chart/pdf/{raceid}{month}{day}{year}{country}.pdf"
+    queryString = "https://www.equibase.com/premium/eqbPDFChartPlus.cfm?RACE=A&BorP=P&TID={raceid}&CTRY={country}&DT={month}/{day}/{year}&DAY=D&STYLE=EQB"
 
     urls = []
 
     for track in track_data:
         for date in datelist:
+            if(date.day < 10): #Makes sure leading 0 is in day
+                date_day = "0{}".format(date.day)
+            else:
+                date_day = date.day
+            if(date.month < 10):
+                date_month = "0{}".format(date.month)
+            else:
+                date_month = date.month
             urls.append(queryString.format(raceid = track["abrev"],
-                                      month = date.month,
-                                      day = date.day,
-                                      year = date.year % 1000,
+                                      month = date_month,
+                                      day = date_day,
+                                      year = date.year,
                                       country = track['country']
                                       ))
     return urls
@@ -51,16 +59,24 @@ def generate_urls(start_date, end_date):
 
     datelist = pd.date_range(start,end).tolist()
 
-    queryString = "https://www.equibase.com/static/chart/pdf/{raceid}{month}{day}{year}{country}.pdf"
+    queryString = "https://www.equibase.com/premium/eqbPDFChartPlus.cfm?RACE=A&BorP=P&TID={raceid}&CTRY={country}&DT={month}/{day}/{year}&DAY=D&STYLE=EQB"
 
     urls = []
 
     for track in track_data:
         for date in datelist:
+            if(date.day < 10): #Makes sure leading 0 is in day
+                date_day = "0{}".format(date.day)
+            else:
+                date_day = date_day
+            if(date.month < 10):
+                date_month = "0{}".format(date.month)
+            else:
+                date_month = date.month
             urls.append(queryString.format(raceid = track["abrev"],
-                                      month = date.month,
-                                      day = date.day,
-                                      year = date.year % 1000,
+                                      month = date_month,
+                                      day = date_day,
+                                      year = date.year,
                                       country = track['country']
                                       ))
     return urls
