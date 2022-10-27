@@ -29,6 +29,6 @@
 		{"name": "Santa Anita Park", "abrev": "SA", "country": "USA"},
 		{"name": "Will Rogers Downs", "abrev": "WRD", "country": "USA"},
 		{"name": "Woodbine", "abrev": "WO", "country": "CAN"},
-		{"name": "Zia Park", "abrev": "ZIA"}
+		{"name": "Zia Park", "abrev": "ZIA", "country": "USA"}
 	]
 }

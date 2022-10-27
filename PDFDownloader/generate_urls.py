@@ -30,7 +30,7 @@ def generate_urls_last50():
                                       month = date.month,
                                       day = date.day,
                                       year = date.year % 1000,
-                                      country = track['country']
+                                      country = track["country"]
                                       ))
     return urls
 
@@ -61,6 +61,6 @@ def generate_urls(start_date, end_date):
                                       month = date.month,
                                       day = date.day,
                                       year = date.year % 1000,
-                                      country = track['country']
+                                      country = track["country"]
                                       ))
     return urls
