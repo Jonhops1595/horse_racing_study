@@ -8,6 +8,7 @@ Created on Thu Oct 27 10:04:47 2022
 
 from requests_tor import RequestsTor
 import os
+import time
 
 class TorService:
     def __init__(self, urls):
@@ -32,6 +33,7 @@ class TorService:
         if(text.__contains__("ROBOTS")):
             print("Found Robots, adding to try later list")
             self.robot_list.append(self.urls[self.index])
+            time.sleep(5)
             return False
         if 'Helvetica' in text:
             return True
