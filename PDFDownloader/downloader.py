@@ -16,7 +16,6 @@ urls = generate_urls.generate_urls_last50()
 
 print(len(urls))
 tor = tor_service.TorService(urls) #Tor service to get pdfs from Equibase urls
-#google_cloud_storage.authenticate_implicit_with_adc()
 print(os.getcwd())
 while tor.index < len(urls):
     result = tor.get_next_pdf(os.getcwd()) #Get PDF from tor_service, download it locally 
