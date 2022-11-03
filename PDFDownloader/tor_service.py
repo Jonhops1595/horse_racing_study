@@ -9,6 +9,7 @@ Created on Thu Oct 27 10:04:47 2022
 from requests_tor import RequestsTor
 import os
 import time
+import csv
 
 class TorService:
     def __init__(self, urls):
@@ -40,6 +41,35 @@ class TorService:
         else:
             print("Empty File; Discarding")
             return False 
+        
+    '''Runs through the robot_list until it is empty'''
+    def run_robot_list(self,temp_path = os.getcwd()):
+        while(len(self.robot_list) > 0):
+            index = 0
+            while(index < len(self.robot_list)):
+                r = self.rt.get(self.robot_list[index])
+                if(self.verify_page(r)):
+                    str_list = self.urls[self.index].split('&')
+                    track_id = str_list[2].split('=')[1]
+                    date = str_list[4].split('=')[1].replace('/','_')
+                    name =  track_id +"_"+date
+                    filename = '{}/{}.pdf'.format(temp_path,name)
+                    with open(filename, 'wb') as f:  
+                        f.write(r.content) # writes the bytes to a file with the name of the race   
+                        f.close()
+                    self.robot_list.pop(index)
+        
+    def write_robot_to_file(self,temp_path = os.getcwd()):
+        with open('robot_list.csv', 'w') as f:
+            write = csv.writer(f)
+            write.writerows(self.robot_list)
+            f.close()
+        print("Wrote robot_list to {}".format(os.getcwd() + 'robot_list.csv'))
+            
+    
+    
+                    
+            
     
     '''
     Returns path of new pdf downloaded 
@@ -84,6 +114,7 @@ class TorService:
             return filename
         else:
             print("PDF not found at url")
+
         
 
     
