@@ -7,9 +7,9 @@ Created on Thu Oct 27 10:04:47 2022
 """
 
 from requests_tor import RequestsTor
+import pandas as pd
 import os
 import time
-import csv
 
 class TorService:
     def __init__(self, urls):
@@ -21,7 +21,7 @@ class TorService:
                   tor_cport=9051,
                   autochange_id=1)  
         '''
-        self.rt = RequestsTor(tor_ports=(9050,),
+        self.rt = RequestsTor(tor_ports=(9000,9001,9002,9003,9004,9005),
                               tor_cport=9051,
                               password = 'TriggerPull',
                               autochange_id=1
@@ -60,25 +60,20 @@ class TorService:
                     self.robot_list.pop(index)
         
     def write_robot_to_file(self,temp_path = os.getcwd()):
-        with open('robot_list.csv', 'w') as f:
-            write = csv.writer(f)
-            write.writerows(self.robot_list)
-            f.close()
+        df = pd.DataFrame(self.robot_list, columns = ["url"])
+        df.to_csv('robot_list.csv')
         print("Wrote robot_list to {}".format(os.getcwd() + 'robot_list.csv'))
-            
-    
-    
-                    
-            
+        
     
     '''
     Returns path of new pdf downloaded 
     temp_path: path to download pdfs into
     '''
     def get_next_pdf(self,temp_path = os.getcwd()):
+        filename = '-1'
         foundPDF = False
         #Loop until valid URL
-        while not(foundPDF):
+        while not(foundPDF) and self.index < len(self.urls):
             #time.sleep(5)
             r = self.rt.get(self.urls[self.index])
             print(r, "at", self.urls[self.index])
@@ -93,8 +88,9 @@ class TorService:
                 with open(filename, 'wb') as f:  
                     f.write(r.content) # writes the bytes to a file with the name of the race   
                     f.close()
+                print("Wrote PDF to : ", filename)
             self.index += 1
-        print("Wrote PDF to : ", filename)
+            
         return filename
         
     def get_pdf_at_url(self,url,temp_path = os.getcwd()):
