@@ -27,6 +27,7 @@ class TorService:
                               autochange_id=1
                               )
         self.robot_list = []
+        self.downloaded_list = []
 
 
     def verify_page(self,page):
@@ -34,7 +35,7 @@ class TorService:
         if(text.__contains__("ROBOTS")):
             print("Found Robots, adding to try later list")
             self.robot_list.append(self.urls[self.index])
-            time.sleep(5)
+            self.rt.new_id()
             return False
         if 'Helvetica' in text:
             return True
@@ -64,6 +65,11 @@ class TorService:
         df.to_csv('robot_list.csv')
         print("Wrote robot_list to {}".format(os.getcwd() + 'robot_list.csv'))
         
+    def write_downloaded_to_file(self,temp_path = os.getcwd()):
+        df = pd.DataFrame(self.downloaded_list, columns = ["url"])
+        df.to_csv('downloaded_list.csv')
+        print("Wrote downloaded_list to {}".format(os.getcwd() + 'downloaded_list.csv'))
+        
     
     '''
     Returns path of new pdf downloaded 
@@ -88,6 +94,7 @@ class TorService:
                 with open(filename, 'wb') as f:  
                     f.write(r.content) # writes the bytes to a file with the name of the race   
                     f.close()
+                self.downloaded_list.append(self.urls[self.index])
                 print("Wrote PDF to : ", filename)
             self.index += 1
             

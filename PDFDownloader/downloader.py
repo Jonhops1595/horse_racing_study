@@ -27,6 +27,8 @@ while tor.index < len(urls):
         google_cloud_storage.upload_pdf(result, file_name) #Write PDF to google.cloud storage
         os.remove(file_name)#Delete file from local
 tor.write_robot_to_file()
+tor.write_downloaded_to_file()
+
 
 
     
