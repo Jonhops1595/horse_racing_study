@@ -18,14 +18,22 @@ def generate_urls_last50():
     today = datetime.today()
     today = "{} {} {}".format(today.month,today.day,today.year)
 
-    datelist = pd.date_range(end = today, periods=50).tolist()
+    datelist = pd.date_range(end = today,periods=50).tolist()
+    df = pd.DataFrame(datelist, columns = ['date']) #Creates df of dates
+    df['day_of_week'] = df['date'].dt.day_name() #Adds day_of_week  asa column
+    df = df.loc[df['day_of_week'].isin(['Thursday', 'Friday', 'Saturday', 'Sunday'])] #Selects rows with dates of specified days
+    filtered_date_list = df['date'] #Put new dates into list
+    
+    
+    
+    
 
     queryString = "https://www.equibase.com/premium/eqbPDFChartPlus.cfm?RACE=A&BorP=P&TID={raceid}&CTRY={country}&DT={month}/{day}/{year}&DAY=D&STYLE=EQB"
 
     urls = []
 
     for track in track_data:
-        for date in datelist:
+        for date in filtered_date_list:
             if(date.day < 10): #Makes sure leading 0 is in day
                 date_day = "0{}".format(date.day)
             else:
@@ -35,17 +43,10 @@ def generate_urls_last50():
             else:
                 date_month = date.month
             urls.append(queryString.format(raceid = track["abrev"],
-<<<<<<< HEAD
                                       month = date_month,
                                       day = date_day,
                                       year = date.year,
                                       country = track['country']
-=======
-                                      month = date.month,
-                                      day = date.day,
-                                      year = date.year % 1000,
-                                      country = track["country"]
->>>>>>> 507baa190123ef5135564fc302cfa66dde6d87fb
                                       ))
     return urls
 
@@ -65,13 +66,18 @@ def generate_urls(start_date, end_date):
     end = "{} {} {}".format(end_date.month,end_date.day,end_date.year)
 
     datelist = pd.date_range(start,end).tolist()
+    df = pd.DataFrame(datelist, columns = ['date']) #Creates df of dates
+    df['day_of_week'] = df['date'].dt.day_name() #Adds day_of_week  asa column
+    df = df.loc[df['day_of_week'].isin(['Thursday', 'Friday', 'Saturday', 'Sunday'])] #Selects rows with dates of specified days
+    filtered_date_list = df['date'] #Put new dates into list
+    
 
     queryString = "https://www.equibase.com/premium/eqbPDFChartPlus.cfm?RACE=A&BorP=P&TID={raceid}&CTRY={country}&DT={month}/{day}/{year}&DAY=D&STYLE=EQB"
 
     urls = []
 
     for track in track_data:
-        for date in datelist:
+        for date in filtered_date_list:
             if(date.day < 10): #Makes sure leading 0 is in day
                 date_day = "0{}".format(date.day)
             else:
@@ -81,16 +87,9 @@ def generate_urls(start_date, end_date):
             else:
                 date_month = date.month
             urls.append(queryString.format(raceid = track["abrev"],
-<<<<<<< HEAD
                                       month = date_month,
                                       day = date_day,
                                       year = date.year,
                                       country = track['country']
-=======
-                                      month = date.month,
-                                      day = date.day,
-                                      year = date.year % 1000,
-                                      country = track["country"]
->>>>>>> 507baa190123ef5135564fc302cfa66dde6d87fb
                                       ))
     return urls
