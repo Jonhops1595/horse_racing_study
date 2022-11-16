@@ -48,6 +48,7 @@ class TorService:
         while(len(self.robot_list) > 0):
             index = 0
             while(index < len(self.robot_list)):
+                print(index)
                 r = self.rt.get(self.robot_list[index])
                 if(self.verify_page(r)):
                     str_list = self.urls[self.index].split('&')
@@ -67,7 +68,7 @@ class TorService:
         
     def write_downloaded_to_file(self,temp_path = os.getcwd()):
         df = pd.DataFrame(self.downloaded_list, columns = ["url"])
-        df.to_csv('downloaded_list.csv')
+        df.to_csv('downloaded_list_{}.csv'.format(len(self.robot_list)))
         print("Wrote downloaded_list to {}".format(os.getcwd() + 'downloaded_list.csv'))
         
     
@@ -81,7 +82,13 @@ class TorService:
         #Loop until valid URL
         while not(foundPDF) and self.index < len(self.urls):
             #time.sleep(5)
-            r = self.rt.get(self.urls[self.index])
+            try:
+                r = self.rt.get(self.urls[self.index])
+            except:
+                self.robot_list.append(self.urls[self.index])
+                self.rt.new_id()
+                print("Error has occured; Adding {} to robot list".format(self.urls[self.index]))
+                
             print(r, "at", self.urls[self.index])
             if(r.status_code != 404 and self.verify_page(r)): #If pdf is at url
                 foundPDF = True

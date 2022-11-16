@@ -81,7 +81,7 @@ def generate_urls(start_date, end_date):
             if(date.day < 10): #Makes sure leading 0 is in day
                 date_day = "0{}".format(date.day)
             else:
-                date_day = date_day
+                date_day = date.day
             if(date.month < 10):
                 date_month = "0{}".format(date.month)
             else:
