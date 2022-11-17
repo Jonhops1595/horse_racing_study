@@ -13,6 +13,8 @@ horse_racing_study is an academic end-to-end data science project focusing on th
   
  More in depth progress on an item by item basis is tracked on the [Project Board](https://github.com/users/Jonhops1595/projects/2/views/1)
  
+ An [Initial Project Plan](Initial_Project_Plan.pdf) was also created at the start of Fall 2022 which contains a high level overview of the end-to-end workflow of the project.
+ 
 
 ## SubSections
   - [Domain Learning](Horse_Racing_Domain_Learning/README_Domain.md) contains all the information used to learn more about horseracing, handicapping, and how to read PP/Result cards. 
