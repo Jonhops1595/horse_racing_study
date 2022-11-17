@@ -17,9 +17,9 @@ horse_racing_study is an academic end-to-end data science project focusing on th
  
 
 ## SubSections
-  - [Domain Learning](Horse_Racing_Domain_Learning/README_Domain.md) contains all the information used to learn more about horseracing, handicapping, and how to read PP/Result cards. 
-  - [Downloading of PDF Files](PDFDownloader/README_Downloader.md) contains the code used to download the PDFs from Equibase to then be stored on our shared Google Cloud storage bucket.
-  - [Scanning of PDF Files](PDFScanner/README_Scanner.md) contains the code used to scan the result pdfs and extract data needed for the model.
+  - [Domain Learning](HorseRacing_Domain_Learning) contains all the information used to learn more about horseracing, handicapping, and how to read PP/Result cards. 
+  - [Downloading of PDF Files](PDFDownloader) contains the code used to download the PDFs from Equibase to then be stored on our shared Google Cloud storage bucket.
+  - [Scanning of PDF Files](PDFScanner) contains the code used to scan the result pdfs and extract data needed for the model.
 
 
 
