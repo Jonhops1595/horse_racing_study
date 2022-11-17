@@ -2,65 +2,79 @@
 # -*- coding: utf-8 -*-
 """
 Created on Thu Oct 27 10:04:47 2022
+Last Updated on Thu Nov 17 2022
 
-@author: grandjourney
+@author: Jon Hopkins
 """
 
 from requests_tor import RequestsTor
 import pandas as pd
 import os
 import time
+import copy
 
 class TorService:
     def __init__(self, urls):
-        self.urls = urls
-        self.index = 0
+        self.urls = urls #Urls to be requested
+        self.index = 0 #index in the list of urls
+        
         '''
-        self.rt = RequestsTor(tor_ports=[9050, 9000, 9001, 9002, 9003, 9004, 9005, 9006, 9007, 
-                            9008, 9009, 9010, 9011, 9012, 9013, 9014, 9015, 9016, 9017, 9018], 
-                  tor_cport=9051,
-                  autochange_id=1)  
+        Sets up the RequestsTor object
+        Need to edit the torrc file to be able to use all tor ports as well as enable the hash controlled password and set it to a hashed 'TriggerPull'. Follow requests_tor documentation on the README to learn more.
         '''
         self.rt = RequestsTor(tor_ports=(9000,9001,9002,9003,9004,9005),
                               tor_cport=9051,
                               password = 'TriggerPull',
                               autochange_id=1
                               )
-        self.robot_list = []
-        self.downloaded_list = []
+        self.robot_list = [] #List of urls that led to robot detection, try again later
+        self.downloaded_list = [] #List of urls that had a full race pdf
+        self.empty_list = [] #List of urls that were empty
 
-
+    '''
+    Verifies if the page from the request is empty or if the service was detected by Equibase security
+    Adds url to either of the three lists:
+        -robot_list if the service was detected by equibase security 
+        -downloaded_list if the request got a full pdf
+        -empty_list if the request got an empty file
+    '''
     def verify_page(self,page):
         text = page.text
         if(text.__contains__("ROBOTS")):
-            print("Found Robots, adding to try later list")
+            print("Found Robots, adding to robot list")
             self.robot_list.append(self.urls[self.index])
-            self.rt.new_id()
+            self.rt.new_id() #Gets new ID
             return False
         if 'Helvetica' in text:
+            self.downloaded_list(self.urls[self.index])
             return True
         else:
             print("Empty File; Discarding")
+            self.empty_list.append(self.urls[self.index])
             return False 
         
     '''Runs through the robot_list until it is empty'''
-    def run_robot_list(self,temp_path = os.getcwd()):
-        while(len(self.robot_list) > 0):
+    def run_robot_list(self,result_list,temp_path = os.getcwd()):
+        old_robot_list = copy.deepcopy(self.robot_list)
+        self.robot_list = []
+        while(len(old_robot_list) > 0):
             index = 0
-            while(index < len(self.robot_list)):
+            while(index < len(old_robot_list)):
                 print(index)
                 r = self.rt.get(self.robot_list[index])
                 if(self.verify_page(r)):
                     str_list = self.urls[self.index].split('&')
                     track_id = str_list[2].split('=')[1]
                     date = str_list[4].split('=')[1].replace('/','_')
-                    name =  track_id +"_"+date
-                    filename = '{}/{}.pdf'.format(temp_path,name)
-                    with open(filename, 'wb') as f:  
-                        f.write(r.content) # writes the bytes to a file with the name of the race   
-                        f.close()
-                    self.robot_list.pop(index)
-        
+                    name =  track_id +"_"+date+.".pdf"
+                result_list.append("filename" : name, "request" : r)
+        old_robot_list = copy.deepcopy(self.robot_list)
+        self.robot_list = []
+                    
+    '''                
+    The functions below write the different url lists as a csv                
+    Can use temp_path to specify where you want it downloaded to, otherwise it will go in your current working directory 
+    '''
     def write_robot_to_file(self,temp_path = os.getcwd()):
         df = pd.DataFrame(self.robot_list, columns = ["url"])
         df.to_csv('robot_list.csv')
@@ -68,66 +82,48 @@ class TorService:
         
     def write_downloaded_to_file(self,temp_path = os.getcwd()):
         df = pd.DataFrame(self.downloaded_list, columns = ["url"])
-        df.to_csv('downloaded_list_{}.csv'.format(len(self.robot_list)))
+        df.to_csv('downloaded_list_{}.csv'.format(len(self.downloaded_list)))
         print("Wrote downloaded_list to {}".format(os.getcwd() + 'downloaded_list.csv'))
+    
+    def write_empty_to_file(self,temp_path = os.getcwd()):
+        df = pd.DataFrame(self.empty_list, columns = ["url"])
+        df.to_csv('empty_list_{}.csv'.format(len(self.empty_list)))
+        print("Wrote empty_list to {}".format(os.getcwd() + 'empty_list.csv'))
         
     
     '''
-    Returns path of new pdf downloaded 
-    temp_path: path to download pdfs into
+    Returns a list of dictionaries that contain the filename and request data from the urls containing full race PDFS
+    
+    params:
+    run_robot_list (bool): If True, this method will also run the robot_list until it is depleted. False will not run the robot_list
+    
+    filename = Name of file. Contains track and date information
+    request = Request from URL. Contains raw data gotten from address. Can be used to get pdf
+    
     '''
-    def get_next_pdf(self,temp_path = os.getcwd()):
-        filename = '-1'
-        foundPDF = False
-        #Loop until valid URL
-        while not(foundPDF) and self.index < len(self.urls):
-            #time.sleep(5)
+    def get_pdfs(self,run_robot_list = True):
+        result_list = []
+        while self.index < len(self.urls):
+        print("Attempting url at index{}.format(self.index)")
             try:
                 r = self.rt.get(self.urls[self.index])
             except:
                 self.robot_list.append(self.urls[self.index])
                 self.rt.new_id()
                 print("Error has occured; Adding {} to robot list".format(self.urls[self.index]))
-                
             print(r, "at", self.urls[self.index])
             if(r.status_code != 404 and self.verify_page(r)): #If pdf is at url
-                foundPDF = True
                 #Making name for file
                 str_list = self.urls[self.index].split('&')
                 track_id = str_list[2].split('=')[1]
                 date = str_list[4].split('=')[1].replace('/','_')
-                name =  track_id +"_"+date
-                filename = '{}/{}.pdf'.format(temp_path,name)
-                with open(filename, 'wb') as f:  
-                    f.write(r.content) # writes the bytes to a file with the name of the race   
-                    f.close()
-                self.downloaded_list.append(self.urls[self.index])
-                print("Wrote PDF to : ", filename)
+                name =  track_id +"_"+date+.".pdf"
+                result_list.append("filename" : name, "request" : r)
             self.index += 1
-            
-        return filename
-        
-    def get_pdf_at_url(self,url,temp_path = os.getcwd()):
-        r = self.rt.get(url)
-        print(r, "at", self.urls[self.index])
-        if(r.status_code != 404 and self.verify_page(r)): #If pdf is at url
-            #Making name for file
-            str_list = self.urls[self.index].split('&')
-            track_id = str_list[2].split('=')[1]
-            date = str_list[4].split('=')[1].replace('/','_')
-            name =  track_id +"_"+date
-            filename = '{}/{}.pdf'.format(temp_path,name)
-            with open(filename, 'wb') as f:  
-                f.write(r.content) # writes the bytes to a file with the name of the race   
-                f.close()
-            print("Wrote PDF to : ", filename)
-            return filename
+        if(run_robot_list):
+            print("Running robot list until it is cleared
+            final_result_list = run_robot_list(self,result_list)
+            return final_result_list
         else:
-            print("PDF not found at url")
-
-        
-
-    
-    
-    
-    
+            return result_list
+       
