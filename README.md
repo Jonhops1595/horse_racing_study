@@ -24,7 +24,7 @@ horse_racing_study is an academic end-to-end data science project focusing on th
 
 
 ## Faculty & Mentors:
-  - Dr. Randy Rosenburgher: Professor of Economics & Business Administration @ Juniata
+  - Dr. Randy Rosenberger: Professor of Economics & Business Administration @ Juniata
   - Alexander Lawson: Head of Data @ ClearCo 
 
 
