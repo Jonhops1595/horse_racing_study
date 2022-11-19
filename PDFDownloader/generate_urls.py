@@ -5,6 +5,20 @@ from datetime import datetime
 import pandas as pd
 
 '''
+Generates all urls for full race pdfs on equibase
+Both functions return a list of urls
+
+Jon Hopkins; 11/4/22
+'''
+
+'''
+Day List
+To change the days that urls are being generated for, modify this list below
+'''
+day_list = ['Thursday', 'Friday', 'Saturday', 'Sunday']
+
+
+'''
 Generates all urls for full race pdfs on equibase for the past 50 days
 Returns a list of urls
 '''
@@ -21,7 +35,10 @@ def generate_urls_last50():
     datelist = pd.date_range(end = today,periods=50).tolist()
     df = pd.DataFrame(datelist, columns = ['date']) #Creates df of dates
     df['day_of_week'] = df['date'].dt.day_name() #Adds day_of_week  asa column
-    df = df.loc[df['day_of_week'].isin(['Thursday', 'Friday', 'Saturday', 'Sunday'])] #Selects rows with dates of specified days
+   
+    #To change which days of the week are being  
+    
+    df = df.loc[df['day_of_week'].isin(day_list)] #Selects rows with dates of specified days
     filtered_date_list = df['date'] #Put new dates into list
     
     
@@ -68,7 +85,7 @@ def generate_urls(start_date, end_date):
     datelist = pd.date_range(start,end).tolist()
     df = pd.DataFrame(datelist, columns = ['date']) #Creates df of dates
     df['day_of_week'] = df['date'].dt.day_name() #Adds day_of_week  asa column
-    df = df.loc[df['day_of_week'].isin(['Thursday', 'Friday', 'Saturday', 'Sunday'])] #Selects rows with dates of specified days
+    df = df.loc[df['day_of_week'].isin(day_list)] #Selects rows with dates of specified days
     filtered_date_list = df['date'] #Put new dates into list
     
 
