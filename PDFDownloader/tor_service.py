@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 """
 Created on Thu Oct 27 10:04:47 2022
-Last Updated on Thu Nov 17 2022
+Last Updated on Thu Nov 18 2022
 
 @author: Jon Hopkins
 """
@@ -38,38 +38,43 @@ class TorService:
         -downloaded_list if the request got a full pdf
         -empty_list if the request got an empty file
     '''
-    def verify_page(self,page):
+    def verify_page(self,page,url):
         text = page.text
         if(text.__contains__("ROBOTS")):
             print("Found Robots, adding to robot list")
-            self.robot_list.append(self.urls[self.index])
+            self.robot_list.append(url)
             self.rt.new_id() #Gets new ID
             return False
         if 'Helvetica' in text:
-            self.downloaded_list(self.urls[self.index])
+            self.downloaded_list.append(url)
             return True
         else:
             print("Empty File; Discarding")
-            self.empty_list.append(self.urls[self.index])
+            self.empty_list.append(url)
             return False 
         
     '''Runs through the robot_list until it is empty'''
     def run_robot_list(self,result_list,temp_path = os.getcwd()):
+        print(type(result_list))
         old_robot_list = copy.deepcopy(self.robot_list)
         self.robot_list = []
         while(len(old_robot_list) > 0):
+            print("Running robot list of length {}".format(len(old_robot_list)))
             index = 0
             while(index < len(old_robot_list)):
-                print(index)
-                r = self.rt.get(self.robot_list[index])
-                if(self.verify_page(r)):
-                    str_list = self.urls[self.index].split('&')
+                url = old_robot_list[index]
+                print("Attempting url at index {}".format(index))
+                r = self.rt.get(old_robot_list[index])
+                if(self.verify_page(r,url)):
+                    str_list = url.split('&')
                     track_id = str_list[2].split('=')[1]
                     date = str_list[4].split('=')[1].replace('/','_')
-                    name =  track_id +"_"+date+.".pdf"
-                result_list.append("filename" : name, "request" : r)
-        old_robot_list = copy.deepcopy(self.robot_list)
-        self.robot_list = []
+                    name =  track_id +"_"+date
+                    result_list.append({"filename" : name, "request" : r})
+                index += 1
+            old_robot_list = copy.deepcopy(self.robot_list)
+            self.robot_list = []
+        return result_list
                     
     '''                
     The functions below write the different url lists as a csv                
@@ -104,25 +109,26 @@ class TorService:
     def get_pdfs(self,run_robot_list = True):
         result_list = []
         while self.index < len(self.urls):
-        print("Attempting url at index{}.format(self.index)")
+            url = self.urls[self.index]
+            print("Attempting url at index {}".format(self.index))
             try:
-                r = self.rt.get(self.urls[self.index])
+                r = self.rt.get(url)
             except:
-                self.robot_list.append(self.urls[self.index])
+                self.robot_list.append(url)
                 self.rt.new_id()
-                print("Error has occured; Adding {} to robot list".format(self.urls[self.index]))
-            print(r, "at", self.urls[self.index])
-            if(r.status_code != 404 and self.verify_page(r)): #If pdf is at url
+                print("Error has occured; Adding {} to robot list".format(url))
+            print(r, "at", url)
+            if(r.status_code != 404 and self.verify_page(r,url)): #If pdf is at url
                 #Making name for file
-                str_list = self.urls[self.index].split('&')
+                str_list = url.split('&')
                 track_id = str_list[2].split('=')[1]
                 date = str_list[4].split('=')[1].replace('/','_')
-                name =  track_id +"_"+date+.".pdf"
-                result_list.append("filename" : name, "request" : r)
+                name =  track_id +"_"+date
+                result_list.append({"filename" : name, "request" : r})
             self.index += 1
         if(run_robot_list):
-            print("Running robot list until it is cleared
-            final_result_list = run_robot_list(self,result_list)
+            print("Running robot list until it is cleared")
+            final_result_list = self.run_robot_list(result_list)
             return final_result_list
         else:
             return result_list
