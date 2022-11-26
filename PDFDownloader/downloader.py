@@ -23,7 +23,6 @@ end_date = datetime.date(2022,11,4)
 #urls = generate_urls.generate_urls(start_date, end_date)
 
 urls = generate_urls.generate_urls_last50()
-urls = urls[150:175]
 print(len(urls))
 
 tor = tor_service.TorService(urls) #Tor service to get pdfs from Equibase urls
@@ -31,13 +30,12 @@ cwd = os.getcwd()
 
 result_list = tor.get_pdfs()
 
-print(type(result_list))
 for result in result_list:
     filepath =  '{}/{}.pdf'.format(cwd,result['filename'])
     with open(filepath, 'wb') as f:  
         f.write(result['request'].content) # writes the bytes to a file with the name of the race
         print("Wrote PDF to : ", filepath)
-    #google_cloud_storage.upload_pdf(result, filepath) #Write PDF to google.cloud storage
-    #os.remove(filepath)#Delete file from local
+    google_cloud_storage.upload_pdf(result, filepath) #Write PDF to google.cloud storage
+    os.remove(filepath)#Delete file from local
     
    
