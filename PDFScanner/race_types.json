@@ -1,0 +1,139 @@
+{
+	"race_types" : {
+		"allowance" : {
+			"type" : "allowance",
+			"word_list" : [ 
+				["track", "", "-", 1],
+				["date" ,  "-", "-"],
+				["race_num" ,  "Race", "ALLOWANCE"],
+				["criteria" ,  "FOR", ".", 2],
+				["track_length" ,  "0", "Current"],
+				["purse" ,  "Purse", "0",2],
+				["weather" ,  "Weather", "Track"],
+				["track_type" ,  "Track", "Off"],
+				["off_time" ,  "at", "Start"],
+				["start" ,  "Start","Timer"]
+			],
+			"split_word" : "Purse"
+		},
+		"allowance claiming" : {
+			"type" : "allowance claiming",
+			"word_list" : [ 
+				["track", "", "-", 1],
+				["date" ,  "-", "-"],
+				["race_num" ,  "Race", "ALLOWANCE"],
+				["criteria" ,  "FOR", ".", 2],
+				["claiming_price" ,  "Price", "0", 2],
+				["track_length" ,  "0", "Current"], 
+				["purse" ,  "Purse", "0",2],
+				["weather" ,  "Weather", "Track"],
+				["track_type" ,  "Track", "Off"],
+				["off_time" ,  "at", "Start"],
+				["start" ,  "Start","Timer"]
+			],
+			"split_word": "Price"
+		},
+		"claiming" : {
+			"type" : "claiming",
+			"word_list" : [ 
+				["track", "", "-", 1],
+				["date" ,  "-", "-"],
+				["race_num" ,  "Race", "CLAIMING"],
+				["criteria" ,  "FOR", ".", 2],
+				["claiming_price" ,  "Price", "0", 2],
+				["track_length" ,  "0", "Current"], 
+				["purse" ,  "Purse", "0",2],
+				["weather" ,  "Weather", "Track"],
+				["track_type" ,  "Track", "Off"],
+				["off_time" ,  "at", "Start"],
+				["start" ,  "Start","Timer"]
+			],
+			"split_word" : "Price"
+		},
+		"maiden claiming" : {
+			"type" : "maiden claiming",
+			"word_list" : [ 
+				["track", "", "-", 1],
+				["date" ,  "-", "-"],
+				["race_num" ,  "Race", "MAIDEN"],
+				["criteria" ,  "Thoroughbred", ".", 2],
+				["claiming_price" ,  "Price", "0", 2],
+				["track_length" ,  "0", "Current"], 
+				["purse" ,  "Purse", "0",2],
+				["weather" ,  "Weather", "Track"],
+				["track_type" ,  "Track", "Off"],
+				["off_time" ,  "at", "Start"],
+				["start" ,  "Start","Timer"]
+			],
+			"split_word" : "Price"
+		},
+		"maiden special weight" : {
+			"type" : "maiden special weight",
+			"word_list" : [ 
+				["track", "", "-", 1],
+				["date" ,  "-", "-"],
+				["race_num" ,  "Race", "MAIDEN"],
+				["criteria" ,  "Thoroughbred", ".", 2],
+				["weight" , "Weight", ".", 2],
+				["track_length" ,  ".", "Current"], 
+				["purse" ,  "Purse", "0",2],
+				["weather" ,  "Weather", "Track"],
+				["track_type" ,  "Track", "Off"],
+				["off_time" ,  "at", "Start"],
+				["start" ,  "Start","Timer"]
+			],
+			"split_word" : "Purse"
+		},
+		"stakes" : {
+			"type" : "stakes",
+			"word_list" : [ 
+				["track", "", "-", 1],
+				["date" ,  "-", "-"],
+				["race_num" ,  "Race", "STAKES"],
+				["criteria" ,  "FOR", ".", 2],
+				["track_length" ,  "0", "Current"], 
+				["purse" ,  "Purse", "0",2],
+				["weather" ,  "Weather", "Track"],
+				["track_type" ,  "Track", "Off"],
+				["off_time" ,  "at", "Start"],
+				["start" ,  "Start","Timer"]
+			],
+			"split_word" : "Purse"
+		},
+		"starter allowance" : {
+			"type" : "starter allowance",
+			"word_list" : [ 
+				["track", "", "-", 1],
+				["date" ,  "-", "-"],
+				["race_num" ,  "Race", "STARTER"],
+				["criteria" ,  "FOR", ".", 2],
+				["claiming_price" ,  "Price", "0", 2],
+				["track_length" ,  "0", "Current"], 
+				["purse" ,  "Purse", "0",2],
+				["weather" ,  "Weather", "Track"],
+				["track_type" ,  "Track", "Off"],
+				["off_time" ,  "at", "Start"],
+				["start" ,  "Start","Timer"]
+			],
+			"split_word" : "Price"
+		},
+		"starter optional claiming" : {
+			"type" : "starter optional claiming",
+			"word_list" : [ 
+				["track", "", "-", 1],
+				["date" ,  "-", "-"],
+				["race_num" ,  "Race", "STARTER"],
+				["criteria" ,  "FOR", ".", 2],
+				["claiming_price" ,  "Price", "0", 2],
+				["track_length" ,  "0", "Current"], 
+				["purse" ,  "Purse", "0",2],
+				["weather" ,  "Weather", "Track"],
+				["track_type" ,  "Track", "Off"],
+				["off_time" ,  "at", "Start"],
+				["start" ,  "Start","Timer"]
+
+			],
+			"split_word" : "Price"
+		}
+	}
+}
