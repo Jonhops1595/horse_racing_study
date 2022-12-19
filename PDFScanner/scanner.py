@@ -34,7 +34,7 @@ for page in page_list:
     bottom_table = result_tables[1]
     #Dropping horse name for merge
     bottom_table = bottom_table.drop("Horse Name", axis = 1)
-    merged_df = top_table.join(bottom_table, on = "Pgm", rsuffix = "_RLP")
+    merged_df = top_table.join(bottom_table.set_index("Pgm"), on = "Pgm", rsuffix = "_RLP")
     for field,value in header.items():
         merged_df[field] = value
     #Changing all cols to object type 
