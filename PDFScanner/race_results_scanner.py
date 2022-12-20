@@ -296,19 +296,17 @@ def clean_bottom_table(df): #df of top table to be cleaned
     return final_df
 
 
-def scan_page(pdf, page_num):
-    page_list = get_page_list(pdf)
-    page = page_list[page_num]
+def scan_page(pdf, page_num, horse_count):
     #Extract words on position
     pages = extract_pages(pdf)
     full_text_loc_df = extract_to_df(pages)
     #try:
-    text_loc_df = create_text_loc_df(page['page_num'],full_text_loc_df) #Locations of key text on page
+    text_loc_df = create_text_loc_df(page_num,full_text_loc_df) #Locations of key text on page
     print(text_loc_df)
-    table_loc_df = table_location_to_df(page['page_num'],text_loc_df) #Locations of tables on page
+    table_loc_df = table_location_to_df(page_num,text_loc_df) #Locations of tables on page
     print(table_loc_df)
-    top_table = get_table(pdf,table_loc_df,1,page['page_num'],page['horse_count']) #Getting top table
-    bottom_table = get_table(pdf,table_loc_df,2,page['page_num'],page['horse_count']) #Getting bottom table
+    top_table = get_table(pdf,table_loc_df,1,page_num,horse_count) #Getting top table
+    bottom_table = get_table(pdf,table_loc_df,2,page_num,horse_count) #Getting bottom table
     #except:
         #print("Error with page", page["page_num"])#Clean all dataframes in first pdf
     
