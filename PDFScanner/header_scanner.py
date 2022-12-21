@@ -138,6 +138,9 @@ class HeaderScanner():
                 break
             
         #Cleaing results
+        #Prints out top fields for debugging
+        for field,value in top_fields.items():
+            print(field ,':', value)
         for key in top_fields.keys():
             value = top_fields[key]
             value = value.lstrip() #Gets rid of starting spaces

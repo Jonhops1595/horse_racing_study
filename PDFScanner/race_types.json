@@ -50,6 +50,22 @@
 			],
 			"split_word" : "Price"
 		},
+		"maiden" : {
+			"type" : "maiden",
+			"word_list" : [
+				["track", "", "-", 1],
+				["date" ,  "-", "-"],
+				["race_num" ,  "Race", "MAIDEN"],
+				["criteria" ,  "Thoroughbred", ".", 2],
+				["track_length" ,  "0", "Current"], 
+				["purse" ,  "Purse", "0",2],
+				["weather" ,  "Weather", "Track"],
+				["track_type" ,  "Track", "Off"],
+				["off_time" ,  "at", "Start"],
+				["start" ,  "Start","Timer"]
+			],
+			"split_word" : "Purse"
+		},
 		"maiden claiming" : {
 			"type" : "maiden claiming",
 			"word_list" : [ 
@@ -74,7 +90,22 @@
 				["date" ,  "-", "-"],
 				["race_num" ,  "Race", "MAIDEN"],
 				["criteria" ,  "Thoroughbred", ".", 2],
-				["weight" , "Weight", ".", 2],
+				["track_length" ,  ".", "Current"], 
+				["purse" ,  "Purse", "0",2],
+				["weather" ,  "Weather", "Track"],
+				["track_type" ,  "Track", "Off"],
+				["off_time" ,  "at", "Start"],
+				["start" ,  "Start","Timer"]
+			],
+			"split_word" : "Purse"
+		},
+		"speed index race" : {
+			"type" : "speed index race",
+			"word_list" : [
+				["track", "", "-", 1],
+				["date" ,  "-", "-"],
+				["race_num" ,  "Race", "SPEED"],
+				["criteria" ,  "For", ".", 2],
 				["track_length" ,  ".", "Current"], 
 				["purse" ,  "Purse", "0",2],
 				["weather" ,  "Weather", "Track"],

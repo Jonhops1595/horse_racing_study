@@ -306,9 +306,7 @@ def scan_page(pdf, page_num, horse_count):
     full_text_loc_df = extract_to_df(pages)
     #try:
     text_loc_df = create_text_loc_df(page_num,full_text_loc_df) #Locations of key text on page
-    print(text_loc_df)
     table_loc_df = table_location_to_df(page_num,text_loc_df) #Locations of tables on page
-    print(table_loc_df)
     top_table = get_table(pdf,table_loc_df,1,page_num,horse_count) #Getting top table
     bottom_table = get_table(pdf,table_loc_df,2,page_num,horse_count) #Getting bottom table
     #except:
