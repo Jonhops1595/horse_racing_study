@@ -189,13 +189,14 @@ def get_table(file,
             bound_num += 10
         else:
             bound_num *= -1
-    
-    if(bound_num > 200):
-        print("Error: Couldn't find top bound")
-        return
-    else:
-        print("Found table top bound at {}".format(top_bound))
-        table_loc_df.iloc[table_num - 1, 2] = top_bound #Adding new top bound to df
+        print("bound_num = ",bound_num)
+        if(bound_num > 200 or bound_num < -200):
+            print("Error: Couldn't find top bound")
+            raise Exception("Couldn't find top table")
+
+    #Found table top bound
+    print("Found table top bound at {}".format(top_bound))
+    table_loc_df.iloc[table_num - 1, 2] = top_bound #Adding new top bound to df
     
     #Finding bottom bound
 
@@ -221,12 +222,15 @@ def get_table(file,
         else:
             bound_num *= -1
     
-    if(bound_num > 200):
-        print("Error: Couldn't find bottom bound")
-    else:
-        table_loc_df.iloc[table_num - 1, 4] = bottom_bound #Adding new bottom bound to df
-        print("Found table bottom bound at {}".format(bottom_bound))
-        return table_df
+        print("bound_num = ",bound_num)
+        if(bound_num > 200 or bound_num < -200):
+            print("Error: Couldn't find bottom bound")
+            raise Exception("Couldn't find top table")
+
+    #Found table bottom_bound
+    table_loc_df.iloc[table_num - 1, 4] = bottom_bound #Adding new bottom bound to df
+    print("Found table bottom bound at {}".format(bottom_bound))
+    return table_df
 
 #Top Table
 def clean_top_table(df): #df of top table to be cleaned
