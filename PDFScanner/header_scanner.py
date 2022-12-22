@@ -22,7 +22,6 @@ class HeaderScanner():
         self.race_types_dict = race_types["race_types"]
         self.race_types = []
         for field,value in race_types["race_types"].items():
-            print(field)
             self.race_types.append(field)
 
     
@@ -107,11 +106,7 @@ class HeaderScanner():
         
         #Finding text on PDF
         keyword_count = 0 #Num of keywords found
-        i = -1 #Counter for tokenized string
-        
-        print(tokenized_text)
-        print()
-        
+        i = -1 #Counter for tokenized string        
         
         while i < (len(tokenized_text) - 1):
             found_start = False #If found start of phrase to record
@@ -160,12 +155,7 @@ class HeaderScanner():
             if keyword_count >= len(word_list): #Check if keywords are filled
                 break
             
-        #Cleaing results
-        #Prints out top fields for debugging
-        for field,value in top_fields.items():
-            print(field ,':', value)
-            
-            
+        #Cleaing results   
         for key in top_fields.keys():
             value = top_fields[key]
             value = value.lstrip() #Gets rid of starting spaces

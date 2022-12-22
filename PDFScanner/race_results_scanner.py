@@ -7,6 +7,7 @@ Created on Sat Nov 26 13:06:17 2022
 
 import tabula
 import pandas as pd
+import numpy as np
 
 #Extracting key words
 from typing import Any
@@ -47,7 +48,7 @@ def get_page_list(file):  #Pdf file
 #Step 1 in table parsing
 def extract_to_df(pages: Any):
     cols = ["Page","Text", "x_1", "y_1", "x_2", "y_2"]
-    words = ["Last Raced", "Fractional Times", "Past Performance Running Line Preview", "Fin", "Trainers"]
+    words = ["Last Raced", "Fractional Times","Winner", "Past Performance Running Line Preview", "Fin", "Trainers"]
     text_loc_df = pd.DataFrame(columns = cols)
     
     page_counter = -1
@@ -106,7 +107,10 @@ def table_location_to_df(page_num,text_loc_df):
     y_1 = df.loc[df['Text'] == "Last Raced",'y_1'].tolist()[0] #Getting y_1 value
     top = (((729 - y_1) * 11)/792) *72
 
-    y_1 = df.loc[df['Text'] == "Fractional Times",'y_1'].tolist()[0]
+    try:
+        y_1 = df.loc[df['Text'] == "Fractional Times",'y_1'].tolist()[0]
+    except:
+        y_1 = df.loc[df['Text'] == "Winner",'y_1'].tolist()[0]
     bottom = (((729 - y_1) * 11)/792 + .50) *72
 
     #Adding Table 1 to df
@@ -162,16 +166,17 @@ def get_table(file,
     
     #Setting header value to look for
     if(table_num == 1):
-        target_header = 'Last Raced'
+        target_headers = ['Last Raced', 'Last Raced Pgm']
     else:
-        target_header = 'Pgm'
+        target_headers = ['Pgm']
         
 
     
     #Loop until top bound is right
     bound_num = 0 #Increased bounds by 10, both positive and negative to find the right headers. Ex: 10, -10, 20, -20, 30...
     top_bound = table_loc_df.iloc[table_num - 1,2]
-    while(col_names[0] != target_header or bound_num > 200):    
+    found_top = False
+    while(not(found_top) or bound_num > 200):    
         top_bound = table_loc_df.iloc[table_num - 1,2]
         top_bound += bound_num
         test_area[0] = top_bound
@@ -182,14 +187,18 @@ def get_table(file,
             print("Couldn't read a table, moving on from {} top_bound".format(top_bound))
             
         col_names = list(table_df.columns.values)
-
+        
+        #If found one of the target headers for the first column
+        for target_header in target_headers:
+            if(col_names[0] == target_header):
+                found_top = True
+        
         #Change bound_num
         if(bound_num <= 0): #If number is in negative cycle
             bound_num *= -1
             bound_num += 10
         else:
             bound_num *= -1
-        print("bound_num = ",bound_num)
         if(bound_num > 200 or bound_num < -200):
             print("Error: Couldn't find top bound")
             raise Exception("Couldn't find top table")
@@ -222,7 +231,6 @@ def get_table(file,
         else:
             bound_num *= -1
     
-        print("bound_num = ",bound_num)
         if(bound_num > 200 or bound_num < -200):
             print("Error: Couldn't find bottom bound")
             raise Exception("Couldn't find top table")
@@ -234,6 +242,29 @@ def get_table(file,
 
 #Top Table
 def clean_top_table(df): #df of top table to be cleaned
+
+    #Cleaning if Last Raced and PGM are mixed
+    if(list(df.columns.values)[0] == "Last Raced Pgm"):
+        last_raced_vals = []
+        pgm_vals = []
+
+        for i in range(len(df)):
+            if(i % 2 == 0):
+                last_raced_vals.append(df.loc[i,"Last Raced Pgm"])
+                pgm_vals.append(-1)
+            else:
+                split_val = df.loc[i,"Last Raced Pgm"].split(" ")
+                pgm_vals.append(split_val[len(split_val) - 1])
+                new_val = split_val[0]
+                for j in range(1,len(split_val)):
+                    new_val = new_val + " " + split_val[j]
+                last_raced_vals.append(new_val)
+        df = df.drop("Last Raced Pgm", axis = 1)
+        df.insert(loc=0, column = "Last Raced", value = last_raced_vals)
+        df.insert(loc=1, column = "Pgm", value = pgm_vals)
+        df["Pgm"] = df["Pgm"].replace(-1,np.NaN)
+ 
+
     #Merging super scripts
     script_df = df.loc[df['Pgm'].isnull()]
     
