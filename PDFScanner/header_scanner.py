@@ -20,6 +20,11 @@ class HeaderScanner():
         with open('race_types.json') as json_file:
             race_types = json.load(json_file)
         self.race_types_dict = race_types["race_types"]
+        self.race_types = []
+        for field,value in race_types["race_types"].items():
+            print(field)
+            self.race_types.append(field)
+
     
         #List of tracks using track_data
         self.track_list = []
@@ -34,17 +39,6 @@ class HeaderScanner():
         #header_scaner["split_word"]: Word to split pdf on after criteria. Purse or Price
         #header_scanner["word_list"]: Tuple that contains keywords, startword, endword, and if either is inclusive via numeric code
         
-        
-        self.race_types = [
-            "allowance",
-            "allowance claiming",
-            "claiming",
-            "maiden claiming",
-            "maiden special weight",
-            "stakes",
-            "starter allowance",
-            "starter optional claiming"
-        ]
 
     #Returns a score 0-1 on how simlar two strings, a and b are
     def similar(self,a, b):

@@ -50,6 +50,38 @@
 			],
 			"split_word" : "Price"
 		},
+		"derby trail" : {
+			"type" : "derby trail",
+			"word_list" : [
+				["track", "", "-", 1],
+				["date" ,  "-", "-"],
+				["race_num" ,  "Race", "MAIDEN"],
+				["criteria" ,  ["Arabian","Horse","Thoroughbred"], ".", 2],
+				["track_length" ,  ".", "Current"], 
+				["purse" ,  "Purse", "0",2],
+				["weather" ,  "Weather", "Track"],
+				["track_type" ,  "Track", "Off"],
+				["off_time" ,  "at", "Start"],
+				["start" ,  "Start","Timer"]
+			],
+			"split_word" : "Purse"
+		},
+		"futurity trail" : {
+			"type" : "futurity trail",
+			"word_list" : [
+				["track", "", "-", 1],
+				["date" ,  "-", "-"],
+				["race_num" ,  "Race", "MAIDEN"],
+				["criteria" ,  ["Arabian","Horse","Thoroughbred"], ".", 2],
+				["track_length" ,  ".", "Current"], 
+				["purse" ,  "Purse", "0",2],
+				["weather" ,  "Weather", "Track"],
+				["track_type" ,  "Track", "Off"],
+				["off_time" ,  "at", "Start"],
+				["start" ,  "Start","Timer"]
+			],
+			"split_word" : "Purse"
+		},
 		"maiden" : {
 			"type" : "maiden",
 			"word_list" : [
