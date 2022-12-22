@@ -353,16 +353,14 @@ def scan_page(pdf, page_num, horse_count):
     
     #Cleaning df superscripts
     cleaned_df_list = []
-    #try:
-    cleaned_df_list.append(clean_top_table(top_table))
-    #except:
-    #     print("Error with top df on page", page_num)
-    #    cleaned_df_list.append(top_table)
-    #try:
-    cleaned_df_list.append(clean_bottom_table(bottom_table))
-    #except:
-    #    print("Error with bottom df on page", page_num)
-    #    cleaned_df_list.append(bottom_table)
+    try:
+        cleaned_df_list.append(clean_top_table(top_table))
+    except:
+         raise Exception("Error in cleaning top table")
+    try:
+        cleaned_df_list.append(clean_bottom_table(bottom_table))
+    except:
+         raise Exception("Error in cleaning bottom table")
     return cleaned_df_list
 
             
