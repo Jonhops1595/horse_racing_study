@@ -242,9 +242,10 @@ def get_table(file,
 
 #Top Table
 def clean_top_table(df): #df of top table to be cleaned
-
+    
+    col_list = list(df.columns.values)
     #Cleaning if Last Raced and PGM are mixed
-    if(list(df.columns.values)[0] == "Last Raced Pgm"):
+    if(col_list[0] == "Last Raced Pgm"):
         last_raced_vals = []
         pgm_vals = []
 
@@ -264,7 +265,11 @@ def clean_top_table(df): #df of top table to be cleaned
         df.insert(loc=1, column = "Pgm", value = pgm_vals)
         df["Pgm"] = df["Pgm"].replace(-1,np.NaN)
  
-
+    #Getting rid of unnamed cols
+    for col_name in col_list:
+        if(col_name.__contains__("Unnamed")):
+            df = df.drop(col_name,axis=1)
+            
     #Merging super scripts
     script_df = df.loc[df['Pgm'].isnull()]
     
@@ -287,15 +292,18 @@ def clean_top_table(df): #df of top table to be cleaned
     final_df = df_horses.merge(script_df,left_index=True,right_index=True,how='left')
 
     #Splitting Wgt and M/E
-    final_df[['Wgt', 'M/E']] = final_df['Wgt M/E'].str.split(' ', 1,expand = True)
+    try:
+        final_df[['Wgt', 'M/E']] = final_df['Wgt M/E'].str.split(' ', 1,expand = True)
+        final_df.drop('Wgt M/E', axis = 1, inplace = True)
+    except:
+        for col_name in col_list:
+            if(col_name.__contains__('Wgt')):
+               final_df[['Wgt', 'M/E']] = final_df[col_name].str.split(' ', 1,expand = True)
+               final_df.drop(col_name, axis = 1, inplace = True)
+               break
 
-    #Removing unnamed & old index
-    final_df.drop(['index', 'Wgt M/E'], axis = 1, inplace = True)
-
-    #Removing unnamed
-    end_index = final_df.columns.get_loc('Pgm')
-    for i in range(1,end_index):
-        final_df.drop(final_df.columns[1],axis = 1, inplace = True)
+    #Removing old index
+    final_df.drop('index', axis = 1, inplace = True)
         
     return final_df
 
@@ -345,16 +353,16 @@ def scan_page(pdf, page_num, horse_count):
     
     #Cleaning df superscripts
     cleaned_df_list = []
-    try:
-        cleaned_df_list.append(clean_top_table(top_table))
-    except:
-        print("Error with top df on page", page_num)
-        cleaned_df_list.append(top_table)
-    try:
-        cleaned_df_list.append(clean_bottom_table(bottom_table))
-    except:
-        print("Error with bottom df on page", page_num)
-        cleaned_df_list.append(bottom_table)
+    #try:
+    cleaned_df_list.append(clean_top_table(top_table))
+    #except:
+    #     print("Error with top df on page", page_num)
+    #    cleaned_df_list.append(top_table)
+    #try:
+    cleaned_df_list.append(clean_bottom_table(bottom_table))
+    #except:
+    #    print("Error with bottom df on page", page_num)
+    #    cleaned_df_list.append(bottom_table)
     return cleaned_df_list
 
             
