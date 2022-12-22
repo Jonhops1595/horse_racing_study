@@ -34,6 +34,7 @@ class HeaderScanner():
         #header_scaner["split_word"]: Word to split pdf on after criteria. Purse or Price
         #header_scanner["word_list"]: Tuple that contains keywords, startword, endword, and if either is inclusive via numeric code
         
+        
         self.race_types = [
             "allowance",
             "allowance claiming",
@@ -110,29 +111,57 @@ class HeaderScanner():
             
         tokenized_text = top_text.replace(':',' ').split()
         
-        keyword_count = 0
-        i = -1
-        while i < len(tokenized_text) - 1:
+        #Finding text on PDF
+        keyword_count = 0 #Num of keywords found
+        i = -1 #Counter for tokenized string
+        
+        print(tokenized_text)
+        print()
+        
+        
+        while i < (len(tokenized_text) - 1):
+            found_start = False #If found start of phrase to record
+            found_end = False
+            recorded_phrase = ""
             i+=1 #Increment at start of loop
             keyword_tuple = word_list[keyword_count]
-            if tokenized_text[i].__contains__(keyword_tuple[1]): #If startword is found
-                value_string = "" #Start of string
-                keyword = keyword_tuple[0] #Save keyword
-                if len(keyword_tuple) > 3 and keyword_tuple[3] != 2:#Checking if start is inclusive
-                    next_word = tokenized_text[i] #Increment to next word (inclusive)
-                else:
-                    i += 1
-                    next_word = tokenized_text[i] #Increment to next word (exclusive)
-                while not(next_word.__contains__(keyword_tuple[2])) and i < len(tokenized_text) - 1:
-                    value_string = value_string + " " + next_word
-                    i += 1
-                    next_word = tokenized_text[i]
-                if len(keyword_tuple) > 3 and keyword_tuple[3] != 1: #Checking if end is inclusive
-                    value_string = value_string + " " + next_word
-                    i -= 1
-                else: #End is exclusive, decrement by 1 to start at this word next loop
-                    i -= 1
-                top_fields.update({keyword: value_string}) #Add to dictionary
+            keyword = keyword_tuple[0]
+            #Keyword option is if start/end word is inclusive/exclusive of phrase
+            #Default is exclusve
+            if(len(keyword_tuple) > 3):
+                keyword_option = keyword_tuple[3]
+            else:
+                keyword_option = -1
+            #Look for start word(s)
+            text_word = tokenized_text[i]
+            if(type(keyword_tuple[1]) == list): #If start words are a list
+                for word in keyword_tuple[1]:
+                    if(text_word.__contains__(word)):
+                        found_start = True
+            elif(text_word.__contains__(keyword_tuple[1])): #If only 1 start_word
+                found_start = True
+                        
+            #Once found start word; Loop until end word
+            if(found_start):
+                if(keyword_option == 1 or keyword_option == 3): #Checks if start is inclusive
+                        recorded_phrase = recorded_phrase + " " +  text_word #Add word to phrase
+                while not(found_end and i < len(tokenized_text) - 1):
+                    i+= 1 #Increment tokenized string counter
+                    text_word = tokenized_text[i]
+                    if(type(keyword_tuple[2]) == list): #If end words are a list
+                        for end_word in keyword_tuple[2]:
+                            if(text_word.__contains__(end_word)):
+                                found_end = True
+                    elif(text_word.__contains__(keyword_tuple[2])): #If only 1 end_word
+                        found_end = True
+                    else:
+                        recorded_phrase =recorded_phrase + " " +  text_word #Add word to phrase
+                
+                if(found_end and (keyword_option == 2 or keyword_option == 3)): #If end is inclusive
+                        recorded_phrase =recorded_phrase + " " +  text_word #Add word to phrase
+                elif(found_end):
+                    i -= 1 #Decrement since exclusive
+                top_fields.update({keyword: recorded_phrase}) #Add to dictionary
                 keyword_count+=1 #Increment to next keyword
             if keyword_count >= len(word_list): #Check if keywords are filled
                 break
@@ -141,6 +170,8 @@ class HeaderScanner():
         #Prints out top fields for debugging
         for field,value in top_fields.items():
             print(field ,':', value)
+            
+            
         for key in top_fields.keys():
             value = top_fields[key]
             value = value.lstrip() #Gets rid of starting spaces

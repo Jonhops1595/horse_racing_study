@@ -11,7 +11,6 @@ from PyPDF2 import PdfReader
 import pandas as pd
 import json
 import os
-import shutil
 
 
 cwd = os.getcwd() #Gets current workding directory
