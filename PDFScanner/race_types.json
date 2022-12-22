@@ -55,7 +55,7 @@
 			"word_list" : [
 				["track", "", "-", 1],
 				["date" ,  "-", "-"],
-				["race_num" ,  "Race", "MAIDEN"],
+				["race_num" ,  "Race", "DERBY"],
 				["criteria" ,  ["Arabian","Horse","Thoroughbred"], ".", 2],
 				["track_length" ,  ".", "Current"], 
 				["purse" ,  "Purse", "0",2],
@@ -71,7 +71,7 @@
 			"word_list" : [
 				["track", "", "-", 1],
 				["date" ,  "-", "-"],
-				["race_num" ,  "Race", "MAIDEN"],
+				["race_num" ,  "Race", "FUTURITY"],
 				["criteria" ,  ["Arabian","Horse","Thoroughbred"], ".", 2],
 				["track_length" ,  ".", "Current"], 
 				["purse" ,  "Purse", "0",2],

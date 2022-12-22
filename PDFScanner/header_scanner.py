@@ -139,7 +139,7 @@ class HeaderScanner():
             if(found_start):
                 if(keyword_option == 1 or keyword_option == 3): #Checks if start is inclusive
                         recorded_phrase = recorded_phrase + " " +  text_word #Add word to phrase
-                while not(found_end and i < len(tokenized_text) - 1):
+                while not(found_end or i >= (len(tokenized_text) - 1)):
                     i+= 1 #Increment tokenized string counter
                     text_word = tokenized_text[i]
                     if(type(keyword_tuple[2]) == list): #If end words are a list
