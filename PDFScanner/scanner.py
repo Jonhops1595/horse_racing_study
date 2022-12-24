@@ -57,12 +57,13 @@ for pdf in pdf_list:
             result_tables = race_results_scanner.scan_page(pdf,page['page_num'], page['horse_count']) #Table scan
         except:
             print("Error with {}".format(pdf))
-            error_pdfs.append(pdf)
-            gcd.download_pdf(pdf,error_filepath)
+            if(pdf not in error_pdfs):
+                error_pdfs.append(pdf)
+                gcd.download_pdf(pdf,error_filepath)
             continue
         #Combine into page DF
-        top_table = result_tables[0]
-        bottom_table = result_tables[1]
+        top_table = result_tables[0].astype(object)
+        bottom_table = result_tables[1].astype(object)
         #Dropping horse name for merge
         bottom_table = bottom_table.drop("Horse Name", axis = 1)
         merged_df = top_table.join(bottom_table.set_index("Pgm"), on = "Pgm", rsuffix = "_RLP")

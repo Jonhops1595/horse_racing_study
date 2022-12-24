@@ -269,7 +269,29 @@ def clean_top_table(df): #df of top table to be cleaned
     for col_name in col_list:
         if(col_name.__contains__("Unnamed")):
             df = df.drop(col_name,axis=1)
-            
+    
+    #Seperating Horse Name and Jockey's names
+    df['horse_name'] = df['Horse Name (Jockey)'].str.split("(", expand = True)[0]
+    df['Jockey'] =  df['Horse Name (Jockey)'].str.split("(", expand = True)[1]
+    df = df.drop('Horse Name (Jockey)', axis = 1)
+    jockey = df['Jockey'].astype(str)
+    j_split = jockey.str.split(",", expand = True)
+    last_name = []
+    first_name = []
+    for i in range(len(j_split)):
+        row = j_split.loc[i]
+        for j in reversed(range(len(row))):
+            if(not(type(row[j]) == None.__class__)):
+                first_name.append(j_split.loc[i,j].split(")")[0].lstrip())
+                last_name.append("")
+                for k in range(j):
+                    last_name[i] = last_name[i] + " " + j_split.loc[i,k]
+                break
+        last_name[i] = last_name[i].lstrip()
+    df.insert(loc=2, column = "jockey_first_name", value = first_name)
+    df.insert(loc=3, column = "jockey_last_name", value = last_name)
+    df = df.drop('Jockey', axis = 1)
+    
     #Merging super scripts
     script_df = df.loc[df['Pgm'].isnull()]
     
