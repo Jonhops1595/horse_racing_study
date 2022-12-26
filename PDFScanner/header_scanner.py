@@ -170,7 +170,7 @@ class HeaderScanner():
         found_flag = False
         for i in range(len(length_str)):
             for num_word in nums:
-                if(length_str[i] == num_word):
+                if(length_str[i] == num_word and len(length_str) - i < 15):
                     found_flag = True
                     break
             if(found_flag):

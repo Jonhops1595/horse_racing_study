@@ -330,6 +330,32 @@ def clean_top_table(df): #df of top table to be cleaned
     return final_df
 
 def clean_bottom_table(df): #df of top table to be cleaned
+
+    #If Pgm and Horse Name are combined from scan
+    col_list = list(df.columns.values)
+    #Cleaning if Last Raced and PGM are mixed
+    if(col_list[0] == "Pgm Horse Name"):
+        pgm_vals = []
+        horse_name_vals = []
+
+        for i in range(len(df)):
+            if(pd.isnull(df.loc[i,"Pgm Horse Name"])):
+                pgm_vals.append(-1)
+                horse_name_vals.append(-1)
+            else:    
+                split_val = df.loc[i,"Pgm Horse Name"].split(" ",1)
+                pgm_vals.append(split_val[0])
+                horse_name_vals.append(split_val[1])
+        df = df.drop("Pgm Horse Name", axis = 1)
+        df.insert(loc=0, column = "Pgm", value = pgm_vals)
+        df.insert(loc=1, column = "Horse Name", value = horse_name_vals)
+        df["Pgm"] = df["Pgm"].replace(-1,np.NaN)
+        
+    #Getting rid of unnamed cols
+    for col_name in col_list:
+        if(col_name.__contains__("Unnamed")):
+            df = df.drop(col_name,axis=1)
+    
     #Merging super scripts
     script_df = df.loc[df['Pgm'].isnull()]
   
@@ -357,6 +383,12 @@ def clean_bottom_table(df): #df of top table to be cleaned
 
     #Removing old index
     final_df.drop('index', axis = 1, inplace = True)
+    
+    #Removing any extra rows
+    final_df = final_df.astype({'Pgm': str})
+    for i in range(len(final_df)):
+        if(not(final_df.loc[i,"Pgm"].isdigit())): #If a Pgm is not number in a row
+            final_df = final_df.drop([i])
 
     return final_df
 
@@ -378,10 +410,12 @@ def scan_page(pdf, page_num, horse_count):
     try:
         cleaned_df_list.append(clean_top_table(top_table))
     except:
+         #cleaned_df_list.append(top_table) #For Debugging
          raise Exception("Error in cleaning top table")
     try:
         cleaned_df_list.append(clean_bottom_table(bottom_table))
     except:
+         #cleaned_df_list.append(bottom_table) #For Debugging
          raise Exception("Error in cleaning bottom table")
     return cleaned_df_list
 
