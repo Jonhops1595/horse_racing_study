@@ -103,6 +103,7 @@ class HeaderScanner():
             
         tokenized_text = top_text.replace(':',' ').split()
         
+        print(tokenized_text)
         #Finding text on PDF
         keyword_count = 0 #Num of keywords found
         i = -1 #Counter for tokenized string        

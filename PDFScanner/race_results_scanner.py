@@ -439,7 +439,6 @@ def scan_page(pdf, page_num, horse_count):
     
     #Cleaning df superscripts
     cleaned_df_list = []
-    print(top_table)
     try:
         cleaned_df_list.append(clean_top_table(top_table))
     except:
