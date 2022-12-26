@@ -153,11 +153,11 @@ class HeaderScanner():
                 keyword_count+=1 #Increment to next keyword
             if keyword_count >= len(word_list): #Check if keywords are filled
                 break
-        '''
+        
         #Debugging Printing
         for field,value in top_fields.items():
             print(field ,':', value)  
-        '''
+        
         #Cleaing results   
         for key in top_fields.keys():
             value = top_fields[key]

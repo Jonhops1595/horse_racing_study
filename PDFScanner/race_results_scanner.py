@@ -315,15 +315,18 @@ def clean_top_table(df): #df of top table to be cleaned
     final_df = df_horses.merge(script_df,left_index=True,right_index=True,how='left')
 
     #Splitting Wgt and M/E
-    try:
-        final_df[['Wgt', 'M/E']] = final_df['Wgt M/E'].str.split(' ', 1,expand = True)
-        final_df.drop('Wgt M/E', axis = 1, inplace = True)
-    except:
-        for col_name in col_list:
-            if(col_name.__contains__('Wgt')):
-               final_df[['Wgt', 'M/E']] = final_df[col_name].str.split(' ', 1,expand = True)
-               final_df.drop(col_name, axis = 1, inplace = True)
-               break
+    col_list = list(final_df.columns.values)
+
+    if(not("Wgt" in col_list and "M/E" in col_list)):
+        try:
+            final_df[['Wgt', 'M/E']] = final_df['Wgt M/E'].str.split(' ', 1,expand = True)
+            final_df.drop('Wgt M/E', axis = 1, inplace = True)
+        except:
+            for col_name in col_list:
+                if(col_name.__contains__('Wgt')):
+                   final_df[['Wgt', 'M/E']] = final_df[col_name].str.split(' ', 1,expand = True)
+                   final_df.drop(col_name, axis = 1, inplace = True)
+                   break
 
     #Removing old index
     final_df.drop('index', axis = 1, inplace = True)
@@ -436,6 +439,7 @@ def scan_page(pdf, page_num, horse_count):
     
     #Cleaning df superscripts
     cleaned_df_list = []
+    print(top_table)
     try:
         cleaned_df_list.append(clean_top_table(top_table))
     except:
