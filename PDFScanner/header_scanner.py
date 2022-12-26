@@ -91,13 +91,12 @@ class HeaderScanner():
         #Bottom, post price section
         bottom_text = ""
         for i in range(1,len(split_cap)):
-            bottom_text += split_cap[i]
+            bottom_text += "{} {}".format(split_word,split_cap[i])
             
         #tokenized_bottom_text = re.findall('[A-Z][^A-Z]*', bottom_text) #Split on capital letters
         tokenized_bottom_text = [s for s in re.split("([A-Z][^A-Z]*)", bottom_text) if s]
         
         #Adding text back together
-        top_text += " {}".format(split_word)
         for i in range(len(tokenized_bottom_text)):
             top_text += " {}".format(tokenized_bottom_text[i])
         
@@ -154,7 +153,11 @@ class HeaderScanner():
                 keyword_count+=1 #Increment to next keyword
             if keyword_count >= len(word_list): #Check if keywords are filled
                 break
-            
+        '''
+        #Debugging Printing
+        for field,value in top_fields.items():
+            print(field ,':', value)  
+        '''
         #Cleaing results   
         for key in top_fields.keys():
             value = top_fields[key]

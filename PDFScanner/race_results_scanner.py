@@ -8,6 +8,7 @@ Created on Sat Nov 26 13:06:17 2022
 import tabula
 import pandas as pd
 import numpy as np
+import re
 
 #Extracting key words
 from typing import Any
@@ -76,13 +77,12 @@ def extract_to_df(pages: Any):
 
 def create_text_loc_df(page_num,df):
     text_loc_df = df.loc[df['Page'] == page_num] 
-
     #Saving only last instance of fin; Lowest y_1
 
     fin_df = text_loc_df.loc[text_loc_df['Text'] == "Fin"] #df with only Fin
     fin_df = fin_df.sort_values(by=['y_1']) #Sort by y_1 descending
     fin_row = fin_df.iloc[0] #Save 1st row
-    text_loc_df = text_loc_df.loc[text_loc_df['Text'] != "Fin"] #Delete Fin rows
+    text_loc_df = text_loc_df.loc[text_loc_df['Text'] != "Fin"].reset_index(drop = True) #Delete Fin rows
     #text_loc_df = pd.concat(text_loc_df,fin_row.to_frame(),ignore_index=True) #Append right Fin row
     text_loc_df.loc[len(text_loc_df) + 1] = fin_row
 
@@ -96,6 +96,7 @@ def create_text_loc_df(page_num,df):
 #Step 3 of table parsing
 def table_location_to_df(page_num,text_loc_df):
     df = text_loc_df
+    
     cols = ["Page","Table",'Top','Left','Bottom','Right']
     table_loc_df = pd.DataFrame(columns = cols)
     page = page_num
@@ -350,12 +351,40 @@ def clean_bottom_table(df): #df of top table to be cleaned
         df.insert(loc=0, column = "Pgm", value = pgm_vals)
         df.insert(loc=1, column = "Horse Name", value = horse_name_vals)
         df["Pgm"] = df["Pgm"].replace(-1,np.NaN)
+        df["Horse Name"] = df["Horse Name"].replace(-1,np.NaN)
+
+        
+    #Cleaning if Pgm and Start are mixed
+    if(col_list[1] == "Horse Name Start"):
+        horse_name_vals = []
+        start_vals = []
+
+        for i in range(len(df)):
+            if(pd.isnull(df.loc[i,"Horse Name Start"])):
+                horse_name_vals.append(-1)
+                start_vals.append(-1)
+            else:    
+                split_val = df.loc[i,"Horse Name Start"].split(" ")
+                horse_name = ""
+                for i in range(len(split_val)-1):
+                    horse_name = horse_name + " {}".format(split_val[i])
+                start = split_val[len(split_val)-1]
+                if(len(start) > 3): #If start string is greater than 3 chars
+                    split = re.findall('\d+|\D+', start)
+                    horse_name  = horse_name + " {}".format(split[0])
+                    start = split[1]
+                horse_name_vals.append(horse_name)
+                start_vals.append(start)
+        df = df.drop("Horse Name Start", axis = 1)
+        df.insert(loc=1, column = "Horse Name", value = horse_name_vals)
+        df.insert(loc=2, column = "Start", value = start_vals)
+        df["Horse Name"] = df["Horse Name"].replace(-1,np.NaN)
+        df["Start"] = df["Start"].replace(-1,np.NaN)
         
     #Getting rid of unnamed cols
     for col_name in col_list:
         if(col_name.__contains__("Unnamed")):
             df = df.drop(col_name,axis=1)
-    
     #Merging super scripts
     script_df = df.loc[df['Pgm'].isnull()]
   
@@ -372,7 +401,7 @@ def clean_bottom_table(df): #df of top table to be cleaned
     for i in range (0,len(col_name_list)):
         col_name_list[i] = col_name_list[i] + '_length_behind'
     script_df.columns = col_name_list
-
+    
     df_horses = df.loc[df['Pgm'].isnull()==False].reset_index(drop=False)
     script_df.reset_index(drop = True, inplace = True)
     final_df = df_horses.merge(script_df,left_index=True,right_index=True,how='left')
@@ -387,7 +416,7 @@ def clean_bottom_table(df): #df of top table to be cleaned
     #Removing any extra rows
     final_df = final_df.astype({'Pgm': str})
     for i in range(len(final_df)):
-        if(not(final_df.loc[i,"Pgm"].isdigit())): #If a Pgm is not number in a row
+        if((re.search('[a-zA-Z]',final_df.loc[i,"Pgm"]))): #If a Pgm is not number in a row
             final_df = final_df.drop([i])
 
     return final_df

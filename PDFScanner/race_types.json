@@ -89,7 +89,7 @@
 				["date" ,  "-", "-"],
 				["race_num" ,  "Race", "MAIDEN"],
 				["criteria" ,  ["Arabian","Horse","Thoroughbred"], ".", 2],
-				["track_length" ,  "0", "Current"], 
+				["track_length" ,  ".", "Current"], 
 				["purse" ,  "Purse", "0",2],
 				["weather" ,  "Weather", "Track"],
 				["track_type" ,  "Track", "Off"],
