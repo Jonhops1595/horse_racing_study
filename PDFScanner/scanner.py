@@ -16,8 +16,14 @@ import time
 
 start_time = time.perf_counter()
 cwd = os.getcwd() #Gets current workding directory
-#Made PDF List from file
+
+#Made PDF List from Google Cloud Storage
 pdf_list = gcd.list_pdfs()
+#PDF List from errors
+with open('error_pdfs.txt','r') as f:
+    data = f.read()
+pdf_list = data.split("\n")
+pdf_list = pdf_list[:len(pdf_list)-1]
 #pdf_list = ["equibaseFile.pdf","equibaseFile2.pdf","equibaseFile3.pdf"]
 #result_df = race_results_scanner.scan_file(pdf)
 master_df = pd.DataFrame()

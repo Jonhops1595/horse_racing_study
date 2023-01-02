@@ -31,6 +31,7 @@ def get_page_list(file):  #Pdf file
 
         start_count_bool = False
         count = 0
+        pgm = -1
         for i in range(0,len(tokenized_text) - 1):
             if(tokenized_text[i] == "Trainers:"):
                 start_count_bool = True
@@ -38,9 +39,11 @@ def get_page_list(file):  #Pdf file
                 start_count_bool = False
             elif(start_count_bool and tokenized_text[i] == '-'):
                 count += 1
+            elif(start_count_bool and tokenized_text[i].isdigit()):
+                pgm = tokenized_text[i]
 
         if count > 0:
-            page_list.append({'page_num' : page_num - 1, 'horse_count' : count})
+            page_list.append({'page_num' : page_num - 1, 'horse_count' : count, 'last_pgm' : pgm})
     return page_list
 
 
@@ -157,6 +160,7 @@ def get_table(file,
         table_df = scan_df[0]
         col_names = list(table_df.columns.values)
         num_rows = len(table_df.index)
+        print(table_df)
     except:
         print("Couldn't read a table from default area")
         col_names = ["top_not_found"]
@@ -169,7 +173,7 @@ def get_table(file,
     if(table_num == 1):
         target_headers = ['Last Raced', 'Last Raced Pgm']
     else:
-        target_headers = ['Pgm']
+        target_headers = ['Pgm', 'Pgm Horse Name']
         
 
     
@@ -185,6 +189,8 @@ def get_table(file,
             scan_df = tabula.read_pdf(file, pages = page + 1, area = [test_area])
             table_df = scan_df[0]
             col_names = list(table_df.columns.values)
+            print(table_df)
+
             
             #If found one of the target headers for the first column
             for target_header in target_headers:
@@ -204,6 +210,7 @@ def get_table(file,
             raise Exception("Couldn't find top table")
 
     #Found table top bound
+    print(table_df)
     print("Found table top bound at {}".format(top_bound))
     table_loc_df.iloc[table_num - 1, 2] = top_bound #Adding new top bound to df
     
@@ -220,6 +227,8 @@ def get_table(file,
                 scan_df = tabula.read_pdf(file, pages = page + 1, area = [test_area])
                 table_df = scan_df[0]
                 num_rows = len(table_df.index)
+                print(table_df)
+
             except:
                 print("Couldn't read a table, moving on from {} bottom_bound".format(bottom_bound))
 
