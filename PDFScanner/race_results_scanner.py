@@ -106,7 +106,6 @@ def create_text_loc_df(page_num,df):
 #Converts to inches and then pdf_location for tabula
 #Step 3 of table parsing
 def table_location_to_df(page_num,text_loc_df):
-    print(text_loc_df)
     df = text_loc_df
     
     cols = ["Page","Table",'Top','Left','Bottom','Right']
@@ -155,7 +154,6 @@ def get_table(file,
               num_horses, #Number of horses on page
               last_pgm): #Last Pgm of race
 
-    print(table_loc_df)
     print("Looking for tables...")
     #Setting variables 
     num_target_rows = num_horses * 2
@@ -174,7 +172,6 @@ def get_table(file,
         table_df = scan_df[0]
         col_names = list(table_df.columns.values)
         num_rows = len(table_df.index)
-        print(table_df)
     except:
         print("Couldn't read a table from default area")
         col_names = ["top_not_found"]
@@ -267,7 +264,6 @@ def get_table(file,
 
 #Top Table
 def clean_top_table(df): #df of top table to be cleaned
-    print(df)
     
     col_list = list(df.columns.values)
     #Cleaning if Last Raced and PGM are mixed
@@ -297,8 +293,14 @@ def clean_top_table(df): #df of top table to be cleaned
             df = df.drop(col_name,axis=1)
     
     #Seperating Horse Name and Jockey's names
-    df['horse_name'] = df['Horse Name (Jockey)'].str.split("(", expand = True)[0]
-    df['Jockey'] =  df['Horse Name (Jockey)'].str.split("(", expand = True)[1]
+    name_split_df = df['Horse Name (Jockey)'].str.split("(", expand = True)
+    df['horse_name'] = name_split_df[0]
+    print(df['Horse Name (Jockey)'].str.split("(", expand = True)[1])
+    df['Jockey'] = name_split_df[1]
+    #Checks if IRE is in any row
+    for i in range(len(df["Jockey"])):
+        if(str(df.loc[i,"Jockey"]).__contains__('IRE')):
+            df.loc[i,"Jockey"] = name_split_df[2].loc[i]
     df = df.drop('Horse Name (Jockey)', axis = 1)
     jockey = df['Jockey'].astype(str)
     j_split = jockey.str.split(",", expand = True)
@@ -362,7 +364,6 @@ def clean_top_table(df): #df of top table to be cleaned
     return final_df
 
 def clean_bottom_table(df): #df of top table to be cleaned
-    print(df)
 
     #If Pgm and Horse Name are combined from scan
     col_list = list(df.columns.values)
