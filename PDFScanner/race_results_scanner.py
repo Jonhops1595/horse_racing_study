@@ -80,14 +80,22 @@ def extract_to_df(pages: Any):
 
 def create_text_loc_df(page_num,df):
     text_loc_df = df.loc[df['Page'] == page_num] 
+    
     #Saving only last instance of fin; Lowest y_1
-
     fin_df = text_loc_df.loc[text_loc_df['Text'] == "Fin"] #df with only Fin
     fin_df = fin_df.sort_values(by=['y_1']) #Sort by y_1 descending
     fin_row = fin_df.iloc[0] #Save 1st row
     text_loc_df = text_loc_df.loc[text_loc_df['Text'] != "Fin"].reset_index(drop = True) #Delete Fin rows
     #text_loc_df = pd.concat(text_loc_df,fin_row.to_frame(),ignore_index=True) #Append right Fin row
     text_loc_df.loc[len(text_loc_df) + 1] = fin_row
+    
+    #Saving only last instance of winner; Lowest y_1
+    winner_df = text_loc_df.loc[text_loc_df['Text'] == "Winner"] #df with only winner
+    winner_df = winner_df.sort_values(by=['y_1']) #Sort by y_1 descending
+    winner_row = winner_df.iloc[0] #Save 1st row
+    text_loc_df = text_loc_df.loc[text_loc_df['Text'] != "Winner"].reset_index(drop = True) #Delete winner rows
+    #text_loc_df = pd.concat(text_loc_df,winner_row.to_frame(),ignore_index=True) #Append right winner row
+    text_loc_df.loc[len(text_loc_df) + 1] = winner_row
 
     #Resort table by index
     text_loc_df = text_loc_df.sort_index()
@@ -98,6 +106,7 @@ def create_text_loc_df(page_num,df):
 #Converts to inches and then pdf_location for tabula
 #Step 3 of table parsing
 def table_location_to_df(page_num,text_loc_df):
+    print(text_loc_df)
     df = text_loc_df
     
     cols = ["Page","Table",'Top','Left','Bottom','Right']
@@ -143,7 +152,10 @@ def get_table(file,
               table_loc_df, #Dataframe of locations of tables on pdf
               table_num, #Table we are parsing for (1 = top, 2 = bottom)
               page, #Page number
-              num_horses): #Number of horses on page
+              num_horses, #Number of horses on page
+              last_pgm): #Last Pgm of race
+
+    print(table_loc_df)
     print("Looking for tables...")
     #Setting variables 
     num_target_rows = num_horses * 2
@@ -153,6 +165,8 @@ def get_table(file,
             table_loc_df.iloc[table_num - 1,4],
             table_loc_df.iloc[table_num - 1,5]
         ]
+    
+    pgm_col_name = "Pgm"
     
     #Initial table scan
     try:
@@ -189,13 +203,15 @@ def get_table(file,
             scan_df = tabula.read_pdf(file, pages = page + 1, area = [test_area])
             table_df = scan_df[0]
             col_names = list(table_df.columns.values)
-            print(table_df)
+            #print(table_df)
 
             
             #If found one of the target headers for the first column
             for target_header in target_headers:
                 if(col_names[0] == target_header):
                     found_top = True
+                    if(target_header.__contains__("Pgm")): #Saves col where pgm is under for bottom bound
+                        pgm_col_name = target_header
         except:
             print("Couldn't read a table, moving on from {} top_bound".format(top_bound))
         
@@ -210,7 +226,6 @@ def get_table(file,
             raise Exception("Couldn't find top table")
 
     #Found table top bound
-    print(table_df)
     print("Found table top bound at {}".format(top_bound))
     table_loc_df.iloc[table_num - 1, 2] = top_bound #Adding new top bound to df
     
@@ -218,7 +233,8 @@ def get_table(file,
 
     bound_num = 0 #Increased bounds by 10, both positive and negative to find the right headers. Ex: 10, -10, 20, -20, 30...
     bottom_bound = table_loc_df.iloc[table_num - 1,4]
-    while(num_rows != num_target_rows or bound_num > 200):
+    found_bottom = False
+    while(not(found_bottom) or bound_num > 200):
         bottom_bound = table_loc_df.iloc[table_num - 1,4]
         bottom_bound += bound_num
         test_area[2] = bottom_bound
@@ -226,8 +242,9 @@ def get_table(file,
             try:
                 scan_df = tabula.read_pdf(file, pages = page + 1, area = [test_area])
                 table_df = scan_df[0]
-                num_rows = len(table_df.index)
-                print(table_df)
+                if(str(table_df.loc[len(table_df)-1][pgm_col_name]).__contains__(str(last_pgm))): #Checks if last Pgm of scan is last Pgm of race
+                    found_bottom = True
+                #print(table_df)
 
             except:
                 print("Couldn't read a table, moving on from {} bottom_bound".format(bottom_bound))
@@ -432,15 +449,15 @@ def clean_bottom_table(df): #df of top table to be cleaned
     return final_df
 
 
-def scan_page(pdf, page_num, horse_count):
+def scan_page(pdf, page_num, horse_count,last_pgm):
     #Extract words on position
     pages = extract_pages(pdf)
     full_text_loc_df = extract_to_df(pages)
     #try:
     text_loc_df = create_text_loc_df(page_num,full_text_loc_df) #Locations of key text on page
     table_loc_df = table_location_to_df(page_num,text_loc_df) #Locations of tables on page
-    top_table = get_table(pdf,table_loc_df,1,page_num,horse_count) #Getting top table
-    bottom_table = get_table(pdf,table_loc_df,2,page_num,horse_count) #Getting bottom table
+    top_table = get_table(pdf,table_loc_df,1,page_num,horse_count,last_pgm) #Getting top table
+    bottom_table = get_table(pdf,table_loc_df,2,page_num,horse_count,last_pgm) #Getting bottom table
     #except:
         #print("Error with page", page["page_num"])#Clean all dataframes in first pdf
     
