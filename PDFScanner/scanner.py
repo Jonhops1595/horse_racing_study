@@ -64,7 +64,7 @@ for pdf in pdf_list:
     for page in page_list:
         try:
             header = header_scanner.scan(pdf,page['page_num']) #Header scan for page
-            result_tables = race_results_scanner.scan_page(pdf,page['page_num'], page['horse_count']) #Table scan
+            result_tables = race_results_scanner.scan_page(pdf,page['page_num'], page['horse_count'], page['last_pgm']) #Table scan
         except:
             print("Error with {}".format(pdf))
             error_flag = True
@@ -77,6 +77,8 @@ for pdf in pdf_list:
         bottom_table = result_tables[1].astype(object)
         #Dropping horse name for merge
         bottom_table = bottom_table.drop("Horse Name", axis = 1)
+        top_table = top_table.astype({'Pgm' : float})
+        bottom_table = bottom_table.astype({'Pgm' : float})
         merged_df = top_table.join(bottom_table.set_index("Pgm"), on = "Pgm", rsuffix = "_RLP")
         for field,value in header.items():
             merged_df[field] = value
