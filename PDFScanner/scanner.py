@@ -11,11 +11,13 @@ from PyPDF2 import PdfReader
 import pandas as pd
 import json
 import os
+import time
 
 
+start_time = time.perf_counter()
 cwd = os.getcwd() #Gets current workding directory
 #Made PDF List from file
-pdf_list = gcd.list_pdfs()[:25]
+pdf_list = gcd.list_pdfs()
 #pdf_list = ["equibaseFile.pdf","equibaseFile2.pdf","equibaseFile3.pdf"]
 #result_df = race_results_scanner.scan_file(pdf)
 master_df = pd.DataFrame()
@@ -23,6 +25,7 @@ master_df = pd.DataFrame()
 CA_Abbrevs = ["AJX","HST","WO"]
 #Try-again pdfs
 error_pdfs = []
+scanned_pdfs = []
 CA_flag = False
 for pdf in pdf_list:
     #File work
@@ -30,7 +33,8 @@ for pdf in pdf_list:
     error_filepath = '{}/Error_PDFS/{}'.format(cwd,pdf)
     gcd.download_pdf(pdf,filepath)
     
-    
+    error_flag = False 
+
     #Skipping canadian
     for abrev in CA_Abbrevs:
         if(pdf.__contains__(abrev)):
@@ -57,10 +61,11 @@ for pdf in pdf_list:
             result_tables = race_results_scanner.scan_page(pdf,page['page_num'], page['horse_count']) #Table scan
         except:
             print("Error with {}".format(pdf))
+            error_flag = True
             if(pdf not in error_pdfs):
                 error_pdfs.append(pdf)
                 gcd.download_pdf(pdf,error_filepath)
-            continue
+            break
         #Combine into page DF
         top_table = result_tables[0].astype(object)
         bottom_table = result_tables[1].astype(object)
@@ -83,10 +88,22 @@ for pdf in pdf_list:
         if(len(master_df) < 1):
             master_df = pdf_df
         else:
-            master_df = pd.merge(master_df,pdf_df, how = 'outer')   
+            master_df = pd.merge(master_df,pdf_df, how = 'outer') 
+    if(not(error_flag)):
+        scanned_pdfs.append(pdf)
     os.remove(filepath)#Delete file from local
     
+end_time = time.perf_counter()
+print("Time : {}".format(end_time - start_time))
 
+#Saving lists as txt files
+with open('scanned_pdfs.txt', 'w+') as f:
+    for pdf in scanned_pdfs:
+        f.write('%s\n' %pdf)
+with open('error_pdfs.txt', 'w+') as f:
+    for pdf in error_pdfs:
+        f.write('%s\n' %pdf)   
+master_df.to_csv('master_df.csv')
 '''
 #Extracting for testing
 table_list[1][0].to_csv('top_2.csv')

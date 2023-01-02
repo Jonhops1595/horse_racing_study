@@ -184,15 +184,14 @@ def get_table(file,
         try:
             scan_df = tabula.read_pdf(file, pages = page + 1, area = [test_area])
             table_df = scan_df[0]
+            col_names = list(table_df.columns.values)
+            
+            #If found one of the target headers for the first column
+            for target_header in target_headers:
+                if(col_names[0] == target_header):
+                    found_top = True
         except:
             print("Couldn't read a table, moving on from {} top_bound".format(top_bound))
-            
-        col_names = list(table_df.columns.values)
-        
-        #If found one of the target headers for the first column
-        for target_header in target_headers:
-            if(col_names[0] == target_header):
-                found_top = True
         
         #Change bound_num
         if(bound_num <= 0): #If number is in negative cycle
@@ -220,10 +219,9 @@ def get_table(file,
             try:
                 scan_df = tabula.read_pdf(file, pages = page + 1, area = [test_area])
                 table_df = scan_df[0]
+                num_rows = len(table_df.index)
             except:
                 print("Couldn't read a table, moving on from {} bottom_bound".format(bottom_bound))
-
-            num_rows = len(table_df.index)
 
          #Change bound_num
         if(bound_num <= 0): #If number is in negative cycle
