@@ -295,7 +295,6 @@ def clean_top_table(df): #df of top table to be cleaned
     #Seperating Horse Name and Jockey's names
     name_split_df = df['Horse Name (Jockey)'].str.split("(", expand = True)
     df['horse_name'] = name_split_df[0]
-    print(df['Horse Name (Jockey)'].str.split("(", expand = True)[1])
     df['Jockey'] = name_split_df[1]
     #Checks if IRE is in any row
     for i in range(len(df["Jockey"])):
@@ -364,7 +363,7 @@ def clean_top_table(df): #df of top table to be cleaned
     return final_df
 
 def clean_bottom_table(df): #df of top table to be cleaned
-
+    print(df)
     #If Pgm and Horse Name are combined from scan
     col_list = list(df.columns.values)
     #Cleaning if Last Raced and PGM are mixed
@@ -387,32 +386,30 @@ def clean_bottom_table(df): #df of top table to be cleaned
         df["Horse Name"] = df["Horse Name"].replace(-1,np.NaN)
 
         
-    #Cleaning if Pgm and Start are mixed
-    if(col_list[1] == "Horse Name Start"):
+    #Cleaning if Horse Name and another col are mixed
+    if(col_list[1] != "Horse Name"):
         horse_name_vals = []
-        start_vals = []
+        second_vals = []
+        combined_col_name = col_list[1]
+        second_col_name = col_list[1].split(" ")[2]
 
         for i in range(len(df)):
-            if(pd.isnull(df.loc[i,"Horse Name Start"])):
+            if(pd.isnull(df.loc[i,combined_col_name])):
                 horse_name_vals.append(-1)
-                start_vals.append(-1)
+                second_vals.append(-1)
             else:    
-                split_val = df.loc[i,"Horse Name Start"].split(" ")
+                split_val = df.loc[i,combined_col_name].split(" ")
                 horse_name = ""
                 for i in range(len(split_val)-1):
                     horse_name = horse_name + " {}".format(split_val[i])
-                start = split_val[len(split_val)-1]
-                if(len(start) > 3): #If start string is greater than 3 chars
-                    split = re.findall('\d+|\D+', start)
-                    horse_name  = horse_name + " {}".format(split[0])
-                    start = split[1]
+                second = split_val[len(split_val)-1]
                 horse_name_vals.append(horse_name)
-                start_vals.append(start)
-        df = df.drop("Horse Name Start", axis = 1)
+                second_vals.append(second)
+        df = df.drop(combined_col_name, axis = 1)
         df.insert(loc=1, column = "Horse Name", value = horse_name_vals)
-        df.insert(loc=2, column = "Start", value = start_vals)
+        df.insert(loc=2, column = second_col_name, value = second_vals)
         df["Horse Name"] = df["Horse Name"].replace(-1,np.NaN)
-        df["Start"] = df["Start"].replace(-1,np.NaN)
+        df[second_col_name] = df[second_col_name].replace(-1,np.NaN)
         
     #Getting rid of unnamed cols
     for col_name in col_list:

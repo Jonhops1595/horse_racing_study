@@ -155,8 +155,10 @@ class HeaderScanner():
                 break
         
         #Debugging Printing
+        '''
         for field,value in top_fields.items():
             print(field ,':', value)  
+        '''
         
         #Cleaing results   
         for key in top_fields.keys():

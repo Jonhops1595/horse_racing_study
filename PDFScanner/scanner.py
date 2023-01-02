@@ -91,7 +91,6 @@ for pdf in pdf_list:
         else:
             pdf_df = pd.merge(pdf_df, merged_df, how = 'outer')
     
-        print(pdf_df)
         #Merging into master 
         if(len(master_df) < 1):
             master_df = pdf_df
