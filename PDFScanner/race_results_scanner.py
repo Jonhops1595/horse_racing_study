@@ -267,6 +267,7 @@ def get_table(file,
 
 #Top Table
 def clean_top_table(df): #df of top table to be cleaned
+    print(df)
     
     col_list = list(df.columns.values)
     #Cleaning if Last Raced and PGM are mixed
@@ -321,7 +322,10 @@ def clean_top_table(df): #df of top table to be cleaned
     script_df = df.loc[df['Pgm'].isnull()]
     
     #Get col names of race partitions
-    start_index = script_df.columns.get_loc('Start')
+    try:
+        start_index = script_df.columns.get_loc('Start')
+    except:
+        start_index = script_df.columns.get_loc('PP') + 1
     end_index = script_df.columns.get_loc('Odds')
     
     col_name_list = script_df.columns[start_index + 1:end_index]
@@ -358,6 +362,7 @@ def clean_top_table(df): #df of top table to be cleaned
     return final_df
 
 def clean_bottom_table(df): #df of top table to be cleaned
+    print(df)
 
     #If Pgm and Horse Name are combined from scan
     col_list = list(df.columns.values)
@@ -416,7 +421,10 @@ def clean_bottom_table(df): #df of top table to be cleaned
     script_df = df.loc[df['Pgm'].isnull()]
   
     #Get col names of race partitions
-    start_index = script_df.columns.get_loc('Start')
+    try:
+        start_index = script_df.columns.get_loc('Start')
+    except:
+        start_index = script_df.columns.get_loc('Horse Name') + 1
     end_index = script_df.columns.get_loc('Fin') + 1
     
     col_name_list = script_df.columns[start_index + 1:end_index]
